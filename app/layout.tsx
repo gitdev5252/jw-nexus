@@ -1,8 +1,18 @@
+// Corrected Version
+
 import '../styles/globals.css';
 import '@livekit/components-styles';
 import '@livekit/components-styles/prefabs';
 import type { Metadata, Viewport } from 'next';
 import { Toaster } from 'react-hot-toast';
+import { Urbanist } from 'next/font/google';
+
+// ✅ Define font outside component
+const urbanist = Urbanist({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-urbanist',
+});
 
 export const metadata: Metadata = {
   title: {
@@ -51,7 +61,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body data-lk-theme="default">
+      <body data-lk-theme="default" className={urbanist.className}>
         <Toaster />
         {children}
       </body>
