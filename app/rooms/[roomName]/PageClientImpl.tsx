@@ -28,6 +28,8 @@ import {
 } from 'livekit-client';
 import { useRouter } from 'next/navigation';
 import { useSetupE2EE } from '@/lib/useSetupE2EE';
+import { LeftSidebar } from '@/lib/LeftSidebar';
+import VideoMeet from '@/components/VideoMeet';
 
 const CONN_DETAILS_ENDPOINT =
   process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details';
@@ -40,11 +42,11 @@ export function PageClientImpl(props: {
   codec: VideoCodec;
 }) {
   const [preJoinChoices, setPreJoinChoices] = React.useState<LocalUserChoices | undefined>(
-    undefined,
+    undefined, // Keep as undefined for now to avoid type issues
   );
   const preJoinDefaults = React.useMemo(() => {
     return {
-      username: '',
+      username: process.env.NODE_ENV === 'development' ? 'Developer' : '',
       videoEnabled: true,
       audioEnabled: true,
     };
@@ -99,6 +101,7 @@ function VideoConferenceComponent(props: {
   const keyProvider = new ExternalE2EEKeyProvider();
   const { worker, e2eePassphrase } = useSetupE2EE();
   const e2eeEnabled = !!(e2eePassphrase && worker);
+  const [activeTab, setActiveTab] = React.useState('video');
 
   const [e2eeSetupComplete, setE2eeSetupComplete] = React.useState(false);
 
@@ -214,16 +217,40 @@ function VideoConferenceComponent(props: {
   }, []);
 
   return (
-    <div className="lk-room-container">
-      <RoomContext.Provider value={room}>
-        <KeyboardShortcuts />
-        <VideoConference
-          chatMessageFormatter={formatChatMessageLinks}
-          SettingsComponent={SHOW_SETTINGS_MENU ? SettingsMenu : undefined}
-        />
-        <DebugMode />
-        <RecordingIndicator />
-      </RoomContext.Provider>
+    <div className="lk-room-container" style={{ height: '100%', display: 'flex', backgroundColor: '#f8f9fa' }}>
+      <LeftSidebar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '30px' }}>
+        <RoomContext.Provider value={room}>
+          <VideoMeet />
+          {/* <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            padding: '40px',
+            fontSize: '24px',
+            fontWeight: '600',
+            height: '100%',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white'
+          }}>
+            🎥 Video Call Interface - Active Tab: {activeTab}
+          </div> */}
+          <KeyboardShortcuts />
+          <VideoConference
+            chatMessageFormatter={formatChatMessageLinks}
+            SettingsComponent={SHOW_SETTINGS_MENU ? SettingsMenu : undefined}
+          />
+          <DebugMode />
+          <RecordingIndicator />
+        </RoomContext.Provider>
+      </div>
+      <div style={{ padding: '20px', backgroundColor: '#fff', borderLeft: '1px solid #EBEDF1', width: '25%' }}>
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', color: '#262A35', fontWeight: '600', fontSize: 20 }}>Call Details</div>      </div>
     </div>
   );
 }
+
+// http://localhost:3000/rooms/mzom-wael
