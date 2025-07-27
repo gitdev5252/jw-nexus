@@ -30,6 +30,8 @@ import { useRouter } from 'next/navigation';
 import { useSetupE2EE } from '@/lib/useSetupE2EE';
 import { LeftSidebar } from '@/lib/LeftSidebar';
 import VideoMeet from '@/components/VideoMeet';
+import CustomVideoConference from '@/components/CustomVideoConference';
+import MeetingParticipantList from '@/components/MeetingParticipantList';
 
 const CONN_DETAILS_ENDPOINT =
   process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details';
@@ -215,42 +217,28 @@ function VideoConferenceComponent(props: {
       `Encountered an unexpected encryption error, check the console logs for details: ${error.message}`,
     );
   }, []);
-
   return (
-    <div className="lk-room-container" style={{ height: '100%', display: 'flex', backgroundColor: '#f8f9fa' }}>
-      <LeftSidebar
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '30px' }}>
-        <RoomContext.Provider value={room}>
-          <VideoMeet />
-          {/* <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            padding: '40px',
-            fontSize: '24px',
-            fontWeight: '600',
-            height: '100%',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white'
-          }}>
-            🎥 Video Call Interface - Active Tab: {activeTab}
-          </div> */}
+    <RoomContext.Provider value={room}>
+      <div className="lk-room-container flex h-full bg-[#f8f9fa]">
+        {/* Sidebar */}
+        <LeftSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+
+        {/* Main Center Area */}
+        <div className="flex flex-col flex-1">
           <KeyboardShortcuts />
-          <VideoConference
-            chatMessageFormatter={formatChatMessageLinks}
-            SettingsComponent={SHOW_SETTINGS_MENU ? SettingsMenu : undefined}
-          />
+          <CustomVideoConference />
           <DebugMode />
           <RecordingIndicator />
-        </RoomContext.Provider>
+        </div>
+
+        {/* Right Panel (Participants List) */}
+        <div className="bg-white border-l border-gray-200 w-[30%] min-w-[280px]">
+          <MeetingParticipantList />
+        </div>
       </div>
-      <div style={{ padding: '20px', backgroundColor: '#fff', borderLeft: '1px solid #EBEDF1', width: '25%' }}>
-        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', color: '#262A35', fontWeight: '600', fontSize: 20 }}>Call Details</div>      </div>
-    </div>
+    </RoomContext.Provider>
   );
+
 }
 
 // http://localhost:3000/rooms/mzom-wael
