@@ -7,3 +7,8 @@ export const navigationItems : NavigationItem[] = [
   { id: 'chat', icon: '/images/icons/chat.svg', label: 'Chat' },
   { id: 'settings', icon: '/images/icons/settings.svg', label: 'Settings' },
 ];
+export const callDetailsOptions : NavigationItem[] = [
+  { id: 'participants', icon: '/images/icons/participants.svg', label: 'Participants' },
+  { id: 'chat', icon: '/images/icons/chat.svg', label: 'Chat' },
+  { id: 'transcript', icon: '/images/icons/language.svg', label: 'Transcript' },
+];
