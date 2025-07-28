@@ -28,6 +28,10 @@ import {
 } from 'livekit-client';
 import { useRouter } from 'next/navigation';
 import { useSetupE2EE } from '@/lib/useSetupE2EE';
+import { LeftSidebar } from '@/lib/LeftSidebar';
+import VideoMeet from '@/components/VideoMeet';
+import CustomVideoConference from '@/components/CustomVideoConference';
+import MeetingParticipantList from '@/components/MeetingParticipantList';
 
 const CONN_DETAILS_ENDPOINT =
   process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details';
@@ -40,11 +44,11 @@ export function PageClientImpl(props: {
   codec: VideoCodec;
 }) {
   const [preJoinChoices, setPreJoinChoices] = React.useState<LocalUserChoices | undefined>(
-    undefined,
+    undefined, // Keep as undefined for now to avoid type issues
   );
   const preJoinDefaults = React.useMemo(() => {
     return {
-      username: '',
+      username: process.env.NODE_ENV === 'development' ? 'Developer' : '',
       videoEnabled: true,
       audioEnabled: true,
     };
@@ -99,6 +103,7 @@ function VideoConferenceComponent(props: {
   const keyProvider = new ExternalE2EEKeyProvider();
   const { worker, e2eePassphrase } = useSetupE2EE();
   const e2eeEnabled = !!(e2eePassphrase && worker);
+  const [activeTab, setActiveTab] = React.useState('video');
 
   const [e2eeSetupComplete, setE2eeSetupComplete] = React.useState(false);
 
@@ -212,18 +217,28 @@ function VideoConferenceComponent(props: {
       `Encountered an unexpected encryption error, check the console logs for details: ${error.message}`,
     );
   }, []);
-
   return (
-    <div className="lk-room-container">
-      <RoomContext.Provider value={room}>
-        <KeyboardShortcuts />
-        <VideoConference
-          chatMessageFormatter={formatChatMessageLinks}
-          SettingsComponent={SHOW_SETTINGS_MENU ? SettingsMenu : undefined}
-        />
-        <DebugMode />
-        <RecordingIndicator />
-      </RoomContext.Provider>
-    </div>
+    <RoomContext.Provider value={room}>
+      <div className="lk-room-container flex h-full bg-[#f8f9fa]">
+        {/* Sidebar */}
+        <LeftSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+
+        {/* Main Center Area */}
+        <div className="flex flex-col flex-1">
+          <KeyboardShortcuts />
+          <CustomVideoConference />
+          <DebugMode />
+          <RecordingIndicator />
+        </div>
+
+        {/* Right Panel (Participants List) */}
+        <div className="bg-white border-l border-gray-200 w-[30%] min-w-[280px]">
+          <MeetingParticipantList />
+        </div>
+      </div>
+    </RoomContext.Provider>
   );
+
 }
+
+// http://localhost:3000/rooms/mzom-wael

@@ -1,10 +1,15 @@
+@import "tailwindcss";
+
 * {
   box-sizing: border-box;
+  font-family: 'Urbanist', sans-serif;
+
 }
 
 html {
   color-scheme: dark;
   background-color: #111;
+  font-family: 'Urbanist', sans-serif;
 }
 
 html,
