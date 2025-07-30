@@ -91,4 +91,19 @@ export default function MeetingParticipantList() {
       </div>
     </div>
   );
+              <img src={option.icon} alt={option.label} className="w-5 h-5" />
+              <span className="text-sm">{option.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Participants List Component */}
+      <div className="px-6">
+        <ParticipantsList />
+      </div>
+    </div>
+  );
 }
+
+

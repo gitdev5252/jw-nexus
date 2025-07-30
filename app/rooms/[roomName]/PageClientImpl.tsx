@@ -32,6 +32,8 @@ import { LeftSidebar } from '@/lib/LeftSidebar';
 import VideoMeet from '@/components/VideoMeet';
 import CustomVideoConference from '@/components/CustomVideoConference';
 import MeetingParticipantList from '@/components/MeetingParticipantList';
+import MobileHeader from '@/components/MobileHeader';
+import MobileControls from '@/components/MobileControls';
 
 const CONN_DETAILS_ENDPOINT =
   process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details';
@@ -219,23 +221,29 @@ function VideoConferenceComponent(props: {
   }, []);
   return (
     <RoomContext.Provider value={room}>
+      {/* Mobile Header - Only visible on mobile */}
+      <MobileHeader />
+
       <div className="lk-room-container flex h-full bg-[#f8f9fa]">
-        {/* Sidebar */}
+        {/* Desktop Sidebar - Hidden on mobile */}
         <LeftSidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
         {/* Main Center Area */}
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 md:pt-0 pt-20 pb-20 md:pb-0">
           <KeyboardShortcuts />
           <CustomVideoConference />
           <DebugMode />
           <RecordingIndicator />
         </div>
 
-        {/* Right Panel (Participants List) */}
-        <div className="bg-white border-l border-gray-200 w-[30%] min-w-[280px]">
+        {/* Right Panel (Participants List) - Hidden on mobile */}
+        <div className="bg-white border-l border-gray-200 w-[30%] min-w-[280px] hidden md:block">
           <MeetingParticipantList />
         </div>
       </div>
+
+      {/* Mobile Controls - Only visible on mobile */}
+      {/* <MobileControls /> */}
     </RoomContext.Provider>
   );
 

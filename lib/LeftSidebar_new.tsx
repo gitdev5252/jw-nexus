@@ -13,12 +13,8 @@ interface LeftSidebarProps {
 export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarProps) {
   return (
     <>
-      {/* Desktop Sidebar - Only visible on desktop screens */}
-      <div className={styles.sidebar}>
-         <div className={styles.bottomSection}>
-          <div className={styles.userAvatar}>
-          </div>
-        </div>
+      {/* Desktop Sidebar */}
+      <div className={`${styles.sidebar} hidden md:flex`}>
         {/* Navigation Items */}
         <nav className={styles.navigation}>
           {navigationItems.map((item) => (
