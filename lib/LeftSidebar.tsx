@@ -15,8 +15,14 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
     <>
       {/* Desktop Sidebar - Only visible on desktop screens */}
       <div className={styles.sidebar}>
-         <div className={styles.bottomSection}>
+        <div className={styles.bottomSection}>
           <div className={styles.userAvatar}>
+            <img
+              src="/images/icons/icon.png"
+              alt="User Avatar"
+              className={styles.userAvatar}
+            />
+
           </div>
         </div>
         {/* Navigation Items */}
@@ -24,7 +30,8 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
           {navigationItems.map((item) => (
             <button
               key={item.id}
-              className={`${styles.navItem} ${activeTab === item.id ? styles.navItem : ''}`}
+              className={`${styles.navItem} ${activeTab === item.id ? styles.activeNavItem : 'hover:bg-white/10'
+                }`}
               onClick={() => onTabChange?.(item.id)}
               title={item.label}
             >
@@ -34,6 +41,7 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
                 className={styles.navIcon}
               />
             </button>
+
           ))}
         </nav>
 
@@ -49,9 +57,10 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
         {navigationItems.map((item) => (
           <button
             key={item.id}
-            className={`flex flex-col items-center gap-1 focus:outline-none transition-colors ${
-              activeTab === item.id ? 'text-blue-600' : 'text-gray-400'
-            }`}
+            className={`flex flex-col items-center gap-1 focus:outline-none transition-all duration-300 p-2 ${activeTab === item.id
+                ? 'text-blue-600 bg-blue-500/20 backdrop-blur-md shadow-lg shadow-blue-500/25 border border-blue-300/30 rounded-2xl'
+                : 'text-gray-400 hover:bg-white/10 rounded-xl'
+              }`}
             onClick={() => onTabChange?.(item.id)}
             title={item.label}
           >

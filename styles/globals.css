@@ -71,37 +71,28 @@ h2 a {
   text-decoration: none;
 }
 
-/* Custom Participant Name Styling for Better Visibility */
-.lk-participant-tile .lk-participant-name {
-  background: rgba(0, 0, 0, 0.8) !important;
+/* Custom ParticipantTile Styling */
+.lk-participant-tile {
+  background-color: #A7A7A7 !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  border: 2px solid #8A8A8A !important;
+}
+
+/* ParticipantTile video element */
+.lk-participant-tile video {
+  border-radius: 12px !important;
+}
+
+/* ParticipantTile placeholder when no video */
+.lk-participant-tile .lk-participant-placeholder {
+  background-color: #A7A7A7 !important;
+  border-radius: 12px !important;
+}
+
+/* Avatar styling when camera is off */
+.lk-participant-tile .lk-avatar {
+  background-color: #8A8A8A !important;
   color: white !important;
-  padding: 4px 8px !important;
-  border-radius: 6px !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
-  backdrop-filter: blur(4px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-/* Participant tile name overlay positioning */
-.lk-participant-tile .lk-participant-metadata {
-  position: absolute !important;
-  bottom: 8px !important;
-  left: 8px !important;
-  z-index: 10 !important;
-}
-
-/* Audio indicator styling */
-.lk-participant-tile .lk-audio-indicator {
-  background: rgba(34, 197, 94, 0.9) !important;
   border-radius: 50% !important;
-  padding: 2px !important;
-}
-
-/* Muted indicator styling */
-.lk-participant-tile .lk-participant-muted {
-  background: rgba(239, 68, 68, 0.9) !important;
-  border-radius: 50% !important;
-  padding: 2px !important;
 }

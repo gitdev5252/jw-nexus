@@ -8,7 +8,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 60px;
+  padding: 0 50px 50px 50px;
   position: relative;
   border-color: #EBEDF1;
   border: 1px solid #EBEDF1;
@@ -122,8 +122,8 @@
 }
 
 .navIcon {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   color: #6b7280;
   transition: color 0.3s ease;
 }
@@ -141,9 +141,13 @@
   padding-top: 20px;
 }
 
+.bottomSection:first-child {
+  margin-top: 20px;
+}
+
 .userAvatar {
-  width: 48px;
-  height: 48px;
+  width: 60px;
+  height: 60px;
   background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
   border-radius: 16px;
   display: flex;
@@ -217,4 +221,29 @@
   to {
     box-shadow: 0 6px 20px rgba(168, 230, 207, 0.6);
   }
+}
+
+.activeNavItem {
+  background: linear-gradient(
+    145deg,
+    rgba(173, 216, 255, 0.4),
+    rgba(240, 248, 255, 0.15)
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(173, 216, 255, 0.4);
+  box-shadow: 0px 4px 20px rgba(0, 140, 255, 0.15);
+  /* border-radius: 25px; */
+  transition: all 0.3s ease;
+  width: 170%;
+  height: 15%;
+}
+
+.navItem {
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  background: transparent;
 }
