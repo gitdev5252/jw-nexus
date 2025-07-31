@@ -1,10 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  useParticipants,
-  useRoomContext,
-} from '@livekit/components-react';
+import { useParticipants, useRoomContext } from '@livekit/components-react';
 import { Mic, MicOff, Video, VideoOff } from 'lucide-react';
 import { callDetailsOptions } from '@/constants/data';
 import ParticipantsList from './ParticipantsList';
@@ -18,7 +15,7 @@ export default function MeetingParticipantList() {
   const getInitials = (name: string) => {
     return name
       .split(' ')
-      .map(word => word.charAt(0))
+      .map((word) => word.charAt(0))
       .join('')
       .toUpperCase()
       .slice(0, 2);
@@ -28,11 +25,11 @@ export default function MeetingParticipantList() {
   const getAvatarColor = (name: string) => {
     const colors = [
       'bg-blue-400',
-      'bg-green-400', 
+      'bg-green-400',
       'bg-purple-400',
       'bg-pink-400',
       'bg-yellow-400',
-      'bg-indigo-400'
+      'bg-indigo-400',
     ];
     const index = name.length % colors.length;
     return colors[index];
@@ -86,24 +83,7 @@ export default function MeetingParticipantList() {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 px-6 pb-6 overflow-hidden">
-        {renderContent()}
-      </div>
-    </div>
-  );
-              <img src={option.icon} alt={option.label} className="w-5 h-5" />
-              <span className="text-sm">{option.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Participants List Component */}
-      <div className="px-6">
-        <ParticipantsList />
-      </div>
+      <div className="flex-1 px-6 pb-6 overflow-hidden">{renderContent()}</div>
     </div>
   );
 }
-
-
