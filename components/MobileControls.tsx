@@ -147,6 +147,8 @@ export default function MobileControls() {
               </button>
 
               {/* Leave Call */}
+              {/* Divider */}
+              <div className="border-t border-gray-200 my-2" />
               <button
                 onClick={leaveCall}
                 className="w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center transition-all"
