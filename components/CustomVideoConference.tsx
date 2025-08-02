@@ -474,6 +474,21 @@ export default function CustomVideoConference() {
             });
         }
     }, [room.state, participants, localParticipant]);
+    const screenSharePub = localParticipant?.getTrackPublication(Track.Source.ScreenShare);
+    React.useEffect(() => {
+        participants.forEach((p) => {
+            if (p.sid !== localParticipant?.sid) {
+                const pub = p.getTrackPublication(Track.Source.Camera);
+                if (pub && !pub.isSubscribed && pub.setSubscribed) {
+                    const maybePromise = pub.setSubscribed(true);
+                    if (maybePromise && maybePromise.catch) {
+                        maybePromise.catch(console.error);
+                    }
+                }
+            }
+        });
+    }, [participants, localParticipant]);
+
 
     return (
         <div className="flex flex-col h-screen w-full bg-white p-2 sm:p-4 text-black">
@@ -513,9 +528,41 @@ export default function CustomVideoConference() {
 
             {/* Participant Layout */}
             <div className="flex flex-col h-full gap-4">
-                {/* Big Main Tile (You) */}
-                <div className="flex-1">
-                    <div className="relative w-full h-full rounded-lg overflow-hidden shadow-lg border border-gray-200 bg-[#A7A7A7]">
+                {/* Agar koi screen share kar raha hai */}
+                {remoteTracks.some((t) => t.publication?.source === Track.Source.ScreenShare) ? (
+                    <div className="flex-1 relative w-full rounded-lg overflow-hidden shadow-lg border border-gray-200 bg-[#A7A7A7]">
+                        {/* Screen Share Track */}
+                        {remoteTracks
+                            .filter((t) => t.publication?.source === Track.Source.ScreenShare)
+                            .map((trackRef) => {
+                                const track = trackRef.publication?.track;
+                                return (
+                                    <video
+                                        key={trackRef.publication?.trackSid}
+                                        ref={(el) => {
+                                            if (el && track) {
+                                                track.detach();
+                                                track.attach(el);
+                                            }
+                                        }}
+                                        autoPlay
+                                        playsInline
+                                        className="absolute top-0 left-0 w-full h-full object-contain"
+                                    />
+                                );
+                            })}
+
+                        {/* Upar badge jese tumhare code me tha */}
+                        <div className="absolute top-2 left-2 bg-[#68696E] text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2 z-10">
+                            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-600">
+                                {localParticipant?.name?.[0]?.toUpperCase() || "?"}
+                            </div>
+                            <span>You</span>
+                        </div>
+                    </div>
+                ) : (
+                    // Agar screen share nahi ho rahi
+                    <div className="flex-1 relative w-full rounded-lg overflow-hidden shadow-lg border border-gray-200 bg-[#A7A7A7]">
                         {isCameraEnabled ? (
                             <video
                                 ref={localVideoRef}
@@ -534,61 +581,34 @@ export default function CustomVideoConference() {
                             </div>
                         )}
 
-
-                        {/* Badge with Mic Status */}
-                        <div className="absolute top-2 left-2 right-2 flex justify-between items-center z-10">
-                            <div className="bg-[#68696E] text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-600">
-                                    {localParticipant?.name?.[0]?.toUpperCase() || "?"}
-                                </div>
-                                <span>You</span>
+                        {/* Badge */}
+                        <div className="absolute top-2 left-2 bg-[#68696E] text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2 z-10">
+                            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-600">
+                                {localParticipant?.name?.[0]?.toUpperCase() || "?"}
                             </div>
-
-                            {/* Fullscreen Button */}
-                            <button
-                                onClick={() => {
-                                    const video = localVideoRef.current;
-                                    if (video && video.requestFullscreen) {
-                                        video.requestFullscreen();
-                                    }
-                                }}
-                                className="bg-[#68696E] text-white px-4 py-3  rounded-md"
-                            >
-                                <Maximize size={18} />
-                            </button>
+                            <span>You</span>
                         </div>
-
                     </div>
-                </div>
+                )}
 
-                {/* Other Participants in a Grid */}
+                {/* Always show participants (including camera tracks) */}
                 {participants.filter((p) => p.sid !== localParticipant?.sid).length > 0 && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 h-[25vh] overflow-y-auto">
-                        {participants
-                            .filter((p) => p.sid !== localParticipant?.sid)
-                            .map((participant) => {
-                                const cameraTrackRef = remoteTracks.find(
-                                    (t) =>
-                                        t.participant.sid === participant.sid &&
-                                        t.publication?.source === Track.Source.Camera
-                                );
-                                const mediaTrack = cameraTrackRef?.publication?.track;
-
-                                // Check microphone status for this participant
-                                const micPublication = participant.getTrackPublication(Track.Source.Microphone);
-                                const isMicEnabled = micPublication?.isEnabled ?? false;
-
+                        {remoteTracks
+                            .filter((t) => t.publication?.source === Track.Source.Camera)
+                            .map((trackRef) => {
+                                const track = trackRef.publication?.track;
                                 return (
                                     <div
-                                        key={participant.sid}
+                                        key={trackRef.publication?.trackSid}
                                         className="relative rounded-lg overflow-hidden shadow-lg border border-gray-200 flex items-center justify-center bg-[#A7A7A7]"
                                     >
-                                        {mediaTrack && mediaTrack.isEnabled ? (
+                                        {track ? (
                                             <video
                                                 ref={(el) => {
-                                                    if (el && mediaTrack) {
-                                                        mediaTrack.detach();
-                                                        mediaTrack.attach(el);
+                                                    if (el && track) {
+                                                        track.detach();
+                                                        track.attach(el);
                                                     }
                                                 }}
                                                 autoPlay
@@ -596,38 +616,8 @@ export default function CustomVideoConference() {
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (
-                                            <div className="relative flex flex-col justify-end items-center w-full h-full rounded-lg overflow-hidden shadow-lg border border-gray-200">
-                                                {/* Avatar */}
-                                                <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-gray-600 mb-8">
-                                                    {participant.name?.[0]?.toUpperCase() || "?"}
-                                                </div>
-
-                                                {/* Name Badge */}
-                                                <div className="bg-[#68696E] text-white text-sm font-semibold px-4 py-2 rounded-md shadow mb-5 flex items-center gap-2">
-                                                    <span>{participant.name || participant.identity || "Guest"}</span>
-                                                </div>
-
-                                                {/* Mic Icon in top-right */}
-                                                <div className="absolute top-2 right-2 bg-[#68696E] p-2 rounded-lg">
-                                                    {isMicEnabled ? (
-                                                        <Mic size={16} className='text-white' />
-                                                    ) : (
-                                                        <MicOff size={16} className='text-white' />
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                        )}
-
-                                        {/* Badge for when video is on */}
-                                        {mediaTrack && mediaTrack.isEnabled && (
-                                            <div className="absolute top-2 left-2 bg-[#68696E] text-white text-sm font-semibold px-3 py-1 rounded-md shadow flex items-center gap-2">
-                                                <span>{participant.name || participant.identity || "Guest"}</span>
-                                                {isMicEnabled ? (
-                                                    <Mic size={14} className="text-green-400" />
-                                                ) : (
-                                                    <MicOff size={14} className="text-red-400" />
-                                                )}
+                                            <div className="flex items-center justify-center text-gray-600 font-bold text-xl">
+                                                ?
                                             </div>
                                         )}
                                     </div>
@@ -636,6 +626,7 @@ export default function CustomVideoConference() {
                     </div>
                 )}
             </div>
+
 
 
 
