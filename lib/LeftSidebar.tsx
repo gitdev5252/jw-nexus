@@ -17,12 +17,7 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
       <div className={styles.sidebar}>
         <div className={styles.bottomSection}>
           <div className={styles.userAvatar}>
-            <img
-              src="/images/icons/icon.png"
-              alt="User Avatar"
-              className={styles.userAvatar}
-            />
-
+            <img src="/images/icons/icon.png" alt="User Avatar" className={styles.userAvatar} />
           </div>
         </div>
         {/* Navigation Items */}
@@ -30,25 +25,26 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
           {navigationItems.map((item) => (
             <button
               key={item.id}
-              className={`${styles.navItem} ${activeTab === item.id ? styles.activeNavItem : 'hover:bg-white/10'
-                }`}
+              className={`${styles.navItem} ${
+                activeTab === item.id ? styles.activeNavItem : 'hover:bg-white/10'
+              }`}
               onClick={() => onTabChange?.(item.id)}
               title={item.label}
             >
-              <img
-                src={item.icon}
-                alt={item.label}
-                className={styles.navIcon}
-              />
+              <img src={item.icon} alt={item.label} className={styles.navIcon} />
             </button>
-
           ))}
         </nav>
 
         {/* Bottom Avatar */}
         <div className={styles.bottomSection}>
-          <div className={styles.userAvatar}>
-          </div>
+          <Image
+            src={'/images/avatars/default-man.png'}
+            alt="User Avatar"
+            width={60}
+            height={60}
+            className="w-[60px] h-[60px] border-4 border-gray-200 rounded-[16px] object-cover"
+          />
         </div>
       </div>
 
@@ -57,10 +53,11 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
         {navigationItems.map((item) => (
           <button
             key={item.id}
-            className={`flex flex-col items-center gap-1 focus:outline-none transition-all duration-300 p-2 ${activeTab === item.id
+            className={`flex flex-col items-center gap-1 focus:outline-none transition-all duration-300 p-2 ${
+              activeTab === item.id
                 ? 'text-blue-600 bg-blue-500/20 backdrop-blur-md shadow-lg shadow-blue-500/25 border border-blue-300/30 rounded-2xl'
                 : 'text-gray-400 hover:bg-white/10 rounded-xl'
-              }`}
+            }`}
             onClick={() => onTabChange?.(item.id)}
             title={item.label}
           >
