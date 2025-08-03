@@ -224,15 +224,22 @@
 }
 
 .activeNavItem {
-  background: linear-gradient(145deg, rgba(173, 216, 255, 0.4), rgba(240, 248, 255, 0.15));
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(80px);
   border: 1px solid rgba(173, 216, 255, 0.4);
   box-shadow: 0px 4px 20px rgba(0, 140, 255, 0.15);
   /* border-radius: 25px; */
   transition: all 0.3s ease;
   width: 170%;
   height: 15%;
+   background: linear-gradient(
+    77deg,
+    #dcffe0 -22.29%,
+    #65c670 8.65%,
+    #abe6ff 45.79%,
+    #bb93f8 104.59%,
+    #fff 138.63%
+  );
 }
 
 .navItem {
@@ -241,5 +248,5 @@
   justify-content: center;
   align-items: center;
   border-radius: 20px;
-  background: transparent;
+  /* background: transparent; */
 }
