@@ -34,6 +34,7 @@ import CustomVideoConference from '@/components/CustomVideoConference';
 import MeetingParticipantList from '@/components/MeetingParticipantList';
 import MobileHeader from '@/components/MobileHeader';
 import MobileControls from '@/components/MobileControls';
+import ProfileComponent from '@/components/ProfileComponent';
 
 const CONN_DETAILS_ENDPOINT =
   process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details';
@@ -231,15 +232,24 @@ function VideoConferenceComponent(props: {
         {/* Main Center Area */}
         <div className="flex flex-col flex-1 md:pt-0 pt-20 pb-20 md:pb-0">
           <KeyboardShortcuts />
-          <CustomVideoConference />
+          
+          {/* Conditional rendering based on active tab */}
+          {activeTab === 'profile' ? (
+            <ProfileComponent />
+          ) : (
+            <CustomVideoConference />
+          )}
+          
           <DebugMode />
           <RecordingIndicator />
         </div>
 
-        {/* Right Panel (Participants List) - Hidden on mobile */}
-        <div className="bg-white border-l border-gray-200 w-[30%] min-w-[280px] hidden md:block">
-          <MeetingParticipantList />
-        </div>
+        {/* Right Panel (Participants List) - Hidden on mobile and when profile is active */}
+        {activeTab !== 'profile' && (
+          <div className="bg-white border-l border-gray-200 w-[30%] min-w-[280px] hidden md:block">
+            <MeetingParticipantList />
+          </div>
+        )}
       </div>
 
       {/* Mobile Controls - Only visible on mobile */}
