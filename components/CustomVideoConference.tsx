@@ -548,7 +548,27 @@ export default function CustomVideoConference() {
                                 <span className="text-xs text-gray-500">Camera is off</span>
                             </div>
                         )}
+
+                        <div className="absolute top-2 left-2 bg-black/70 text-white text-sm font-semibold px-3 py-1 rounded-md shadow">
+                            You
+                        </div>
+
+                        <button
+                            onClick={() => {
+                                const videoElement = document.querySelector("video");
+                                if (videoElement && videoElement.requestFullscreen) {
+                                    videoElement.requestFullscreen();
+                                }
+                            }}
+                            className="absolute top-2 right-2 bg-black/70 hover:bg-black/90 text-white p-2 rounded-md shadow"
+                            title="Fullscreen"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4" />
+                            </svg>
+                        </button>
                     </div>
+
                 )}
 
                 {/* Remote participants grid */}

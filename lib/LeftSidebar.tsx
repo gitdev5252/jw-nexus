@@ -41,12 +41,11 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
 
         {/* Bottom Avatar */}
         <div className={clsx(styles.bottomSection, 'sm:w-[60px] w-[50px], cursor-pointer')}>
-          <Image
+          <img
             src="/images/avatars/default-man.png"
             alt="User Avatar"
             width={60}
             height={60}
-            priority // ensures it always loads
             className="w-[60px] h-[60px] border-4 border-gray-200 rounded-[16px] object-cover cursor-pointer hover:border-blue-300 transition-colors"
             onClick={() => onTabChange?.('profile')}
           />
