@@ -19,14 +19,14 @@ import {
   Globe,
   Smartphone,
   Eye,
-  EyeOff
+  EyeOff,
 } from 'lucide-react';
 
 const ProfilePage = () => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  
+
   // User data state
   const [userData, setUserData] = useState({
     name: 'John Doe',
@@ -46,7 +46,7 @@ const ProfilePage = () => {
     privacy: {
       profileVisibility: 'public',
       showOnlineStatus: true,
-    }
+    },
   });
 
   const [editData, setEditData] = useState(userData);
@@ -62,19 +62,19 @@ const ProfilePage = () => {
   };
 
   const handleInputChange = (field: string, value: any) => {
-    setEditData(prev => ({
+    setEditData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleNestedChange = (section: 'notifications' | 'privacy', field: string, value: any) => {
-    setEditData(prev => ({
+    setEditData((prev) => ({
       ...prev,
       [section]: {
         ...(prev[section] as any),
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
@@ -91,9 +91,9 @@ const ProfilePage = () => {
               <ArrowLeft size={20} />
               <span className="hidden sm:block">Back</span>
             </button>
-            
+
             <h1 className="text-xl font-semibold text-gray-900">Profile Settings</h1>
-            
+
             <div className="flex items-center gap-2">
               {isEditing ? (
                 <>
@@ -128,7 +128,6 @@ const ProfilePage = () => {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
           {/* Profile Card */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
@@ -147,7 +146,7 @@ const ProfilePage = () => {
                     </button>
                   )}
                 </div>
-                
+
                 <div className="mt-4">
                   {isEditing ? (
                     <input
@@ -159,7 +158,7 @@ const ProfilePage = () => {
                   ) : (
                     <h2 className="text-xl font-bold text-gray-900">{userData.name}</h2>
                   )}
-                  
+
                   <p className="text-gray-600 mt-1">{userData.email}</p>
                   <div className="flex items-center justify-center gap-1 mt-2 text-sm text-gray-500">
                     <Calendar size={14} />
@@ -186,14 +185,13 @@ const ProfilePage = () => {
 
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            
             {/* Personal Information */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
               <div className="flex items-center gap-2 mb-6">
                 <User className="text-blue-600" size={20} />
                 <h3 className="text-lg font-semibold text-gray-900">Personal Information</h3>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -208,10 +206,12 @@ const ProfilePage = () => {
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   ) : (
-                    <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{userData.email}</p>
+                    <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">
+                      {userData.email}
+                    </p>
                   )}
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Phone size={16} className="inline mr-1" />
@@ -225,10 +225,12 @@ const ProfilePage = () => {
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   ) : (
-                    <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{userData.phone}</p>
+                    <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">
+                      {userData.phone}
+                    </p>
                   )}
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <MapPin size={16} className="inline mr-1" />
@@ -242,10 +244,12 @@ const ProfilePage = () => {
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   ) : (
-                    <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{userData.location}</p>
+                    <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">
+                      {userData.location}
+                    </p>
                   )}
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Globe size={16} className="inline mr-1" />
@@ -257,13 +261,23 @@ const ProfilePage = () => {
                       onChange={(e) => handleInputChange('timezone', e.target.value)}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
-                      <option value="Pacific Standard Time (PST)">Pacific Standard Time (PST)</option>
-                      <option value="Eastern Standard Time (EST)">Eastern Standard Time (EST)</option>
-                      <option value="Central Standard Time (CST)">Central Standard Time (CST)</option>
-                      <option value="Mountain Standard Time (MST)">Mountain Standard Time (MST)</option>
+                      <option value="Pacific Standard Time (PST)">
+                        Pacific Standard Time (PST)
+                      </option>
+                      <option value="Eastern Standard Time (EST)">
+                        Eastern Standard Time (EST)
+                      </option>
+                      <option value="Central Standard Time (CST)">
+                        Central Standard Time (CST)
+                      </option>
+                      <option value="Mountain Standard Time (MST)">
+                        Mountain Standard Time (MST)
+                      </option>
                     </select>
                   ) : (
-                    <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{userData.timezone}</p>
+                    <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">
+                      {userData.timezone}
+                    </p>
                   )}
                 </div>
               </div>
@@ -275,7 +289,7 @@ const ProfilePage = () => {
                 <Bell className="text-blue-600" size={20} />
                 <h3 className="text-lg font-semibold text-gray-900">Notification Preferences</h3>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -285,32 +299,42 @@ const ProfilePage = () => {
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={isEditing ? editData.notifications.email : userData.notifications.email}
-                      onChange={(e) => isEditing && handleNestedChange('notifications', 'email', e.target.checked)}
+                      checked={
+                        isEditing ? editData.notifications.email : userData.notifications.email
+                      }
+                      onChange={(e) =>
+                        isEditing && handleNestedChange('notifications', 'email', e.target.checked)
+                      }
                       disabled={!isEditing}
                       className="sr-only peer"
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-gray-900">Push Notifications</p>
-                    <p className="text-sm text-gray-600">Receive push notifications on your device</p>
+                    <p className="text-sm text-gray-600">
+                      Receive push notifications on your device
+                    </p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={isEditing ? editData.notifications.push : userData.notifications.push}
-                      onChange={(e) => isEditing && handleNestedChange('notifications', 'push', e.target.checked)}
+                      checked={
+                        isEditing ? editData.notifications.push : userData.notifications.push
+                      }
+                      onChange={(e) =>
+                        isEditing && handleNestedChange('notifications', 'push', e.target.checked)
+                      }
                       disabled={!isEditing}
                       className="sr-only peer"
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-gray-900">Meeting Reminders</p>
@@ -319,8 +343,13 @@ const ProfilePage = () => {
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={isEditing ? editData.notifications.meeting : userData.notifications.meeting}
-                      onChange={(e) => isEditing && handleNestedChange('notifications', 'meeting', e.target.checked)}
+                      checked={
+                        isEditing ? editData.notifications.meeting : userData.notifications.meeting
+                      }
+                      onChange={(e) =>
+                        isEditing &&
+                        handleNestedChange('notifications', 'meeting', e.target.checked)
+                      }
                       disabled={!isEditing}
                       className="sr-only peer"
                     />
@@ -336,7 +365,7 @@ const ProfilePage = () => {
                 <Shield className="text-blue-600" size={20} />
                 <h3 className="text-lg font-semibold text-gray-900">Privacy Settings</h3>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -346,7 +375,9 @@ const ProfilePage = () => {
                   {isEditing ? (
                     <select
                       value={editData.privacy.profileVisibility}
-                      onChange={(e) => handleNestedChange('privacy', 'profileVisibility', e.target.value)}
+                      onChange={(e) =>
+                        handleNestedChange('privacy', 'profileVisibility', e.target.value)
+                      }
                       className="border border-gray-300 rounded-lg px-3 py-1 text-sm"
                     >
                       <option value="public">Public</option>
@@ -354,20 +385,29 @@ const ProfilePage = () => {
                       <option value="private">Private</option>
                     </select>
                   ) : (
-                    <span className="text-gray-600 capitalize">{userData.privacy.profileVisibility}</span>
+                    <span className="text-gray-600 capitalize">
+                      {userData.privacy.profileVisibility}
+                    </span>
                   )}
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-gray-900">Show Online Status</p>
-                    <p className="text-sm text-gray-600">Let others see when you're online</p>
+                    <p className="text-sm text-gray-600">Let others see when you are online</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={isEditing ? editData.privacy.showOnlineStatus : userData.privacy.showOnlineStatus}
-                      onChange={(e) => isEditing && handleNestedChange('privacy', 'showOnlineStatus', e.target.checked)}
+                      checked={
+                        isEditing
+                          ? editData.privacy.showOnlineStatus
+                          : userData.privacy.showOnlineStatus
+                      }
+                      onChange={(e) =>
+                        isEditing &&
+                        handleNestedChange('privacy', 'showOnlineStatus', e.target.checked)
+                      }
                       disabled={!isEditing}
                       className="sr-only peer"
                     />
@@ -378,7 +418,6 @@ const ProfilePage = () => {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

@@ -17,12 +17,12 @@ import {
   Shield,
   Globe,
   Eye,
-  EyeOff
+  EyeOff,
 } from 'lucide-react';
 
 const ProfileComponent = () => {
   const [isEditing, setIsEditing] = useState(false);
-  
+
   // User data state
   const [userData, setUserData] = useState({
     name: 'John Doe',
@@ -42,7 +42,7 @@ const ProfileComponent = () => {
     privacy: {
       profileVisibility: 'public',
       showOnlineStatus: true,
-    }
+    },
   });
 
   const [editData, setEditData] = useState(userData);
@@ -58,19 +58,19 @@ const ProfileComponent = () => {
   };
 
   const handleInputChange = (field: string, value: any) => {
-    setEditData(prev => ({
+    setEditData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleNestedChange = (section: 'notifications' | 'privacy', field: string, value: any) => {
-    setEditData(prev => ({
+    setEditData((prev) => ({
       ...prev,
       [section]: {
         ...(prev[section] as any),
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
@@ -79,7 +79,7 @@ const ProfileComponent = () => {
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-gray-200">
         <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
-        
+
         <div className="flex items-center gap-2">
           {isEditing ? (
             <>
@@ -113,7 +113,6 @@ const ProfileComponent = () => {
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-4xl mx-auto space-y-6">
-          
           {/* Profile Card */}
           <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
             <div className="flex flex-col md:flex-row items-center gap-6">
@@ -131,7 +130,7 @@ const ProfileComponent = () => {
                   </button>
                 )}
               </div>
-              
+
               <div className="flex-1 text-center md:text-left">
                 {isEditing ? (
                   <input
@@ -143,7 +142,7 @@ const ProfileComponent = () => {
                 ) : (
                   <h2 className="text-2xl font-bold text-gray-900">{userData.name}</h2>
                 )}
-                
+
                 <p className="text-gray-600 mt-1">{userData.email}</p>
                 <div className="flex items-center justify-center md:justify-start gap-1 mt-2 text-sm text-gray-500">
                   <Calendar size={14} />
@@ -173,7 +172,7 @@ const ProfileComponent = () => {
               <User className="text-blue-600" size={20} />
               <h3 className="text-lg font-semibold text-gray-900">Personal Information</h3>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -191,7 +190,7 @@ const ProfileComponent = () => {
                   <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{userData.email}</p>
                 )}
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <Phone size={16} className="inline mr-1" />
@@ -208,7 +207,7 @@ const ProfileComponent = () => {
                   <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{userData.phone}</p>
                 )}
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <MapPin size={16} className="inline mr-1" />
@@ -222,10 +221,12 @@ const ProfileComponent = () => {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 ) : (
-                  <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{userData.location}</p>
+                  <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">
+                    {userData.location}
+                  </p>
                 )}
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <Globe size={16} className="inline mr-1" />
@@ -240,10 +241,14 @@ const ProfileComponent = () => {
                     <option value="Pacific Standard Time (PST)">Pacific Standard Time (PST)</option>
                     <option value="Eastern Standard Time (EST)">Eastern Standard Time (EST)</option>
                     <option value="Central Standard Time (CST)">Central Standard Time (CST)</option>
-                    <option value="Mountain Standard Time (MST)">Mountain Standard Time (MST)</option>
+                    <option value="Mountain Standard Time (MST)">
+                      Mountain Standard Time (MST)
+                    </option>
                   </select>
                 ) : (
-                  <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{userData.timezone}</p>
+                  <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">
+                    {userData.timezone}
+                  </p>
                 )}
               </div>
             </div>
@@ -255,7 +260,7 @@ const ProfileComponent = () => {
               <Bell className="text-blue-600" size={20} />
               <h3 className="text-lg font-semibold text-gray-900">Notification Preferences</h3>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -265,15 +270,19 @@ const ProfileComponent = () => {
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={isEditing ? editData.notifications.email : userData.notifications.email}
-                    onChange={(e) => isEditing && handleNestedChange('notifications', 'email', e.target.checked)}
+                    checked={
+                      isEditing ? editData.notifications.email : userData.notifications.email
+                    }
+                    onChange={(e) =>
+                      isEditing && handleNestedChange('notifications', 'email', e.target.checked)
+                    }
                     disabled={!isEditing}
                     className="sr-only peer"
                   />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-gray-900">Push Notifications</p>
@@ -283,14 +292,16 @@ const ProfileComponent = () => {
                   <input
                     type="checkbox"
                     checked={isEditing ? editData.notifications.push : userData.notifications.push}
-                    onChange={(e) => isEditing && handleNestedChange('notifications', 'push', e.target.checked)}
+                    onChange={(e) =>
+                      isEditing && handleNestedChange('notifications', 'push', e.target.checked)
+                    }
                     disabled={!isEditing}
                     className="sr-only peer"
                   />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-gray-900">Meeting Reminders</p>
@@ -299,8 +310,12 @@ const ProfileComponent = () => {
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={isEditing ? editData.notifications.meeting : userData.notifications.meeting}
-                    onChange={(e) => isEditing && handleNestedChange('notifications', 'meeting', e.target.checked)}
+                    checked={
+                      isEditing ? editData.notifications.meeting : userData.notifications.meeting
+                    }
+                    onChange={(e) =>
+                      isEditing && handleNestedChange('notifications', 'meeting', e.target.checked)
+                    }
                     disabled={!isEditing}
                     className="sr-only peer"
                   />
@@ -316,7 +331,7 @@ const ProfileComponent = () => {
               <Shield className="text-blue-600" size={20} />
               <h3 className="text-lg font-semibold text-gray-900">Privacy Settings</h3>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -326,7 +341,9 @@ const ProfileComponent = () => {
                 {isEditing ? (
                   <select
                     value={editData.privacy.profileVisibility}
-                    onChange={(e) => handleNestedChange('privacy', 'profileVisibility', e.target.value)}
+                    onChange={(e) =>
+                      handleNestedChange('privacy', 'profileVisibility', e.target.value)
+                    }
                     className="border border-gray-300 rounded-lg px-3 py-1 text-sm"
                   >
                     <option value="public">Public</option>
@@ -334,20 +351,29 @@ const ProfileComponent = () => {
                     <option value="private">Private</option>
                   </select>
                 ) : (
-                  <span className="text-gray-600 capitalize">{userData.privacy.profileVisibility}</span>
+                  <span className="text-gray-600 capitalize">
+                    {userData.privacy.profileVisibility}
+                  </span>
                 )}
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-gray-900">Show Online Status</p>
-                  <p className="text-sm text-gray-600">Let others see when you're online</p>
+                  <p className="text-sm text-gray-600">Let others see when you are online</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={isEditing ? editData.privacy.showOnlineStatus : userData.privacy.showOnlineStatus}
-                    onChange={(e) => isEditing && handleNestedChange('privacy', 'showOnlineStatus', e.target.checked)}
+                    checked={
+                      isEditing
+                        ? editData.privacy.showOnlineStatus
+                        : userData.privacy.showOnlineStatus
+                    }
+                    onChange={(e) =>
+                      isEditing &&
+                      handleNestedChange('privacy', 'showOnlineStatus', e.target.checked)
+                    }
                     disabled={!isEditing}
                     className="sr-only peer"
                   />
