@@ -27,11 +27,11 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
           {navigationItems.map((item) => (
             <button
               key={item.id}
-
               className={`${styles.navItem} ${activeTab === item.id ? `${styles.activeNavItem}` : 'hover:bg-white/10'
                 }`}
 
               onClick={() => onTabChange?.(item.id)}
+
               title={item.label}
             >
               <img src={item.icon} alt={item.label} className={styles.navIcon} />
@@ -40,7 +40,7 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
         </nav>
 
         {/* Bottom Avatar */}
-        <div className={clsx(styles.bottomSection, 'sm:w-[60px] w-[50px]')}>
+        <div className={clsx(styles.bottomSection, 'sm:w-[60px] w-[50px], cursor-pointer')}>
           <Image
             src={'/images/avatars/default-man.png'}
             alt="User Avatar"

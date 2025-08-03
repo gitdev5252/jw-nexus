@@ -256,7 +256,4 @@ function VideoConferenceComponent(props: {
       {/* <MobileControls /> */}
     </RoomContext.Provider>
   );
-
 }
-
-// http://localhost:3000/rooms/mzom-wael
