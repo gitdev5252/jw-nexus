@@ -366,6 +366,7 @@ import {
 // import React from "react";
 // import React from "react";
 import React from "react";
+import { ParticipantVideo } from "./ParticipantVideo";
 //
 export default function CustomVideoConference() {
     const room = useRoomContext();
@@ -374,20 +375,48 @@ export default function CustomVideoConference() {
 
     const isMicrophoneEnabled = localParticipant?.isMicrophoneEnabled ?? false;
     const isCameraEnabled = localParticipant?.isCameraEnabled ?? false;
+    const initialStart = typeof window !== "undefined"
+        ? localStorage.getItem("meetingStart")
+        : null;
 
     const [meetingStartTime, setMeetingStartTime] = React.useState<Date | null>(
-        null
+        initialStart ? new Date(initialStart) : null
     );
-    const [elapsedTime, setElapsedTime] = React.useState("00:00:00");
+
+    const [elapsedTime, setElapsedTime] = React.useState(() => {
+        if (initialStart) {
+            const now = new Date();
+            const diff = now.getTime() - new Date(initialStart).getTime();
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            return `${hours.toString().padStart(2, "0")}:${minutes
+                .toString()
+                .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+        }
+        return "00:00:00";
+    });
 
     const localVideoRef = React.useRef<HTMLVideoElement>(null);
 
     // Start meeting timer
+    // React.useEffect(() => {
+    //     if (room.state === "connected" && !meetingStartTime) {
+    //         setMeetingStartTime(new Date());
+    //     }
+    // }, [room.state, meetingStartTime]);
     React.useEffect(() => {
-        if (room.state === "connected" && !meetingStartTime) {
-            setMeetingStartTime(new Date());
+        if (room.state === "connected") {
+            const saved = localStorage.getItem("meetingStart");
+            if (saved) {
+                setMeetingStartTime(new Date(saved));
+            } else {
+                const now = new Date();
+                setMeetingStartTime(now);
+                localStorage.setItem("meetingStart", now.toISOString());
+            }
         }
-    }, [room.state, meetingStartTime]);
+    }, [room.state]);
 
     React.useEffect(() => {
         if (!meetingStartTime) return;
@@ -455,12 +484,17 @@ export default function CustomVideoConference() {
         }
     };
     const leaveRoom = async () => {
+        localStorage.removeItem("meetingStart");
+
         await room.disconnect();
         window.location.href = "/";
     };
+    const localTrack = localParticipant
+        ?.getTrackPublication(Track.Source.Camera)
+        ?.track;
 
     return (
-        <div className="flex flex-col h-screen w-full bg-white p-2 sm:p-4 text-black">
+        <div className="flex flex-col h-screen w-full bg-white p-2 sm:p-4 text-black relative">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2 sm:gap-0">
                 <div className="text-left text-lg font-medium py-2">
@@ -474,7 +508,7 @@ export default function CustomVideoConference() {
             </div>
 
             {/* Main Video Area */}
-            <div className="flex flex-col h-full gap-4">
+            <div className="flex-1 flex flex-col gap-4 overflow-hidden">
                 {remoteTracks.some(
                     (t) => t.publication?.source === Track.Source.ScreenShare
                 ) ? (
@@ -503,14 +537,8 @@ export default function CustomVideoConference() {
                 ) : (
                     // Default local video
                     <div className="flex-1 relative w-full rounded-lg overflow-hidden shadow-lg border border-gray-200 bg-[#A7A7A7]">
-                        {isCameraEnabled ? (
-                            <video
-                                ref={localVideoRef}
-                                autoPlay
-                                muted
-                                playsInline
-                                className="absolute top-0 left-0 w-full h-full object-cover"
-                            />
+                        {isCameraEnabled && localTrack ? (
+                            <ParticipantVideo track={localTrack} />
                         ) : (
                             <div className="flex flex-col items-center justify-center w-full h-full">
                                 <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-gray-600">
@@ -537,17 +565,7 @@ export default function CustomVideoConference() {
                                         className="relative rounded-lg overflow-hidden shadow-lg border border-gray-200 flex items-center justify-center bg-[#A7A7A7]"
                                     >
                                         {track ? (
-                                            <video
-                                                ref={(el) => {
-                                                    if (el && track) {
-                                                        track.detach();
-                                                        track.attach(el);
-                                                    }
-                                                }}
-                                                autoPlay
-                                                playsInline
-                                                className="w-full h-full object-cover"
-                                            />
+                                            <ParticipantVideo track={track} />
                                         ) : (
                                             <div className="flex flex-col items-center justify-center w-full h-full">
                                                 <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-lg font-bold text-gray-600">
@@ -556,14 +574,13 @@ export default function CustomVideoConference() {
                                                 <span className="mt-2 text-gray-700 font-medium">
                                                     {p.name || "Guest"}
                                                 </span>
-                                                <span className="text-xs text-gray-500">
-                                                    Camera is off
-                                                </span>
+                                                <span className="text-xs text-gray-500">Camera is off</span>
                                             </div>
                                         )}
                                     </div>
                                 );
                             })}
+
                     </div>
                 )}
             </div>

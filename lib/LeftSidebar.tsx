@@ -42,13 +42,15 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
         {/* Bottom Avatar */}
         <div className={clsx(styles.bottomSection, 'sm:w-[60px] w-[50px], cursor-pointer')}>
           <Image
-            src={'/images/avatars/default-man.png'}
+            src="/images/avatars/default-man.png"
             alt="User Avatar"
             width={60}
             height={60}
+            priority // ensures it always loads
             className="w-[60px] h-[60px] border-4 border-gray-200 rounded-[16px] object-cover cursor-pointer hover:border-blue-300 transition-colors"
             onClick={() => onTabChange?.('profile')}
           />
+
         </div>
       </div>
 
@@ -57,11 +59,10 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
         {navigationItems.map((item) => (
           <button
             key={item.id}
-            className={`flex flex-col items-center gap-1 focus:outline-none transition-all duration-300 p-2 ${
-              activeTab === item.id
+            className={`flex flex-col items-center gap-1 focus:outline-none transition-all duration-300 p-2 ${activeTab === item.id
                 ? 'text-blue-600 bg-blue-500/20 backdrop-blur-md shadow-lg shadow-blue-500/25 border border-blue-300/30 rounded-2xl'
                 : 'text-gray-400 hover:bg-white/10 rounded-xl'
-            }`}
+              }`}
             onClick={() => onTabChange?.(item.id)}
             title={item.label}
           >
