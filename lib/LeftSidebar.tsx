@@ -4,13 +4,15 @@ import React from 'react';
 import styles from '../styles/LeftSidebar.module.css';
 import { navigationItems } from '@/constants/data';
 import Image from 'next/image';
-
+import { useRouter } from 'next/navigation';
+import clsx from 'clsx';
 interface LeftSidebarProps {
   activeTab?: string;
   onTabChange?: (tab: string) => void;
 }
 
 export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarProps) {
+  const router = useRouter();
   return (
     <>
       {/* Desktop Sidebar - Only visible on desktop screens */}
@@ -37,13 +39,14 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
         </nav>
 
         {/* Bottom Avatar */}
-        <div className={styles.bottomSection}>
+        <div className={clsx(styles.bottomSection, 'sm:w-[60px] w-[50px]')}>
           <Image
             src={'/images/avatars/default-man.png'}
             alt="User Avatar"
             width={60}
             height={60}
             className="w-[60px] h-[60px] border-4 border-gray-200 rounded-[16px] object-cover"
+            onClick={() => router.push('/profile')}
           />
         </div>
       </div>

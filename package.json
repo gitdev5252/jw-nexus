@@ -20,6 +20,7 @@
     "@livekit/track-processors": "^0.5.4",
     "@next/font": "^14.2.15",
     "@tailwindcss/postcss": "^4.1.11",
+    "clsx": "^2.1.1",
     "heroicons": "^2.2.0",
     "livekit-client": "2.13.6",
     "livekit-server-sdk": "2.13.0",
