@@ -72,7 +72,7 @@ export default function ParticipantsList() {
                             {/* Status Icons */}
                             <div className="flex items-center gap-2">
                                 {/* Microphone Status */}
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${participant.isMicrophoneEnabled
+                                {/* <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-call-gradient blur-[5px] ${participant.isMicrophoneEnabled
                                         ? 'bg-green-100'
                                         : 'bg-gray-100'
                                     }`}>
@@ -81,19 +81,39 @@ export default function ParticipantsList() {
                                     ) : (
                                         <MicOff size={16} className="text-gray-400" />
                                     )}
+                                </div> */}
+                                <div className={`w-8 h-8 rounded-full border border-[#EBEDF1] flex items-center justify-center relative ${participant.isMicrophoneEnabled ? 'bg-white' : 'bg-call-gray-100'}`}>
+                                    {participant.isMicrophoneEnabled && (
+                                        <div className="absolute inset-0 w-[26px] h-[26px] left-[3px] top-[4px] bg-call-gradient blur-[4px] rounded-full"></div>
+                                    )}
+                                    {participant.isMicrophoneEnabled ? (
+                                        <Mic className="w-[18px] h-[18px] text-call-text relative z-10" strokeWidth={1} color='#262A35' />
+                                    ) : (
+                                        <MicOff className="w-[18px] h-[18px] text-call-text/50" strokeWidth={1} color='#262A35' />
+                                    )}
+                                </div>
+                                {/* Camera Status */}
+                                <div className={`w-8 h-8 rounded-full border border-[#EBEDF1] flex items-center justify-center relative ${participant.isCameraEnabled ? 'bg-white' : 'bg-call-gray-100'}`}>
+                                    {participant.isCameraEnabled && (
+                                        <div className="absolute inset-0 w-[26px] h-[26px] left-[3px] top-[4px] bg-call-gradient blur-[4px] rounded-full"></div>
+                                    )}
+                                    {participant.isCameraEnabled ? (
+                                        <Video className="w-[18px] h-[18px] text-call-text relative z-10" strokeWidth={1} color='#262A35' />
+                                    ) : (
+                                        <VideoOff className="w-[18px] h-[18px] text-call-text/50" strokeWidth={1} color='#262A35' />
+                                    )}
                                 </div>
 
-                                {/* Camera Status */}
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${participant.isCameraEnabled
-                                        ? 'bg-blue-100'
-                                        : 'bg-gray-100'
+                                {/* <div className={`w-8 h-8 rounded-full flex items-center justify-center ${participant.isCameraEnabled
+                                    ? 'bg-blue-100'
+                                    : 'bg-gray-100'
                                     }`}>
                                     {participant.isCameraEnabled ? (
                                         <Video size={16} className="text-blue-600" />
                                     ) : (
                                         <VideoOff size={16} className="text-gray-400" />
                                     )}
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     ))}

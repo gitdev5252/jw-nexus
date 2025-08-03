@@ -27,9 +27,10 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
           {navigationItems.map((item) => (
             <button
               key={item.id}
-              className={`${styles.navItem} ${
-                activeTab === item.id ? styles.activeNavItem : 'hover:bg-white/10'
-              }`}
+
+              className={`${styles.navItem} ${activeTab === item.id ? `blur-[2px] ${styles.activeNavItem}` : 'hover:bg-white/10'
+                }`}
+
               onClick={() => onTabChange?.(item.id)}
               title={item.label}
             >
