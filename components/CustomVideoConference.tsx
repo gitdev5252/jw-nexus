@@ -349,8 +349,9 @@ import {
     useTracks,
     useLocalParticipant,
     useParticipants,
+    AudioTrack,
 } from "@livekit/components-react";
-import { Track } from "livekit-client";
+import { Track, RoomEvent } from "livekit-client";
 import {
     Mic,
     MicOff,
@@ -361,50 +362,72 @@ import {
     Hand,
     Smile,
     Languages,
-    Maximize,
 } from "lucide-react";
+// import React from "react";
+// import React from "react";
 import React from "react";
-import { AudioTrack } from "@livekit/components-react";
-
+//
 export default function CustomVideoConference() {
     const room = useRoomContext();
     const { localParticipant } = useLocalParticipant();
     const participants = useParticipants();
-    const { isMicrophoneEnabled, isCameraEnabled } = room.localParticipant;
-    const [currentTime, setCurrentTime] = React.useState(new Date());
-    const [meetingStartTime, setMeetingStartTime] = React.useState<Date | null>(null);
-    const [elapsedTime, setElapsedTime] = React.useState('00:00:00');
 
-    // Set meeting start time when room connects
+    const isMicrophoneEnabled = localParticipant?.isMicrophoneEnabled ?? false;
+    const isCameraEnabled = localParticipant?.isCameraEnabled ?? false;
+
+    const [meetingStartTime, setMeetingStartTime] = React.useState<Date | null>(
+        null
+    );
+    const [elapsedTime, setElapsedTime] = React.useState("00:00:00");
+
+    const localVideoRef = React.useRef<HTMLVideoElement>(null);
+
+    // Start meeting timer
     React.useEffect(() => {
-        if (room.state === 'connected' && !meetingStartTime) {
+        if (room.state === "connected" && !meetingStartTime) {
             setMeetingStartTime(new Date());
         }
     }, [room.state, meetingStartTime]);
-    const localVideoRef = React.useRef<HTMLVideoElement>(null);
 
-    // Attach local video when enabled
+    React.useEffect(() => {
+        if (!meetingStartTime) return;
+        const timer = setInterval(() => {
+            const now = new Date();
+            const diff = now.getTime() - meetingStartTime.getTime();
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            setElapsedTime(
+                `${hours.toString().padStart(2, "0")}:${minutes
+                    .toString()
+                    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+            );
+        }, 1000);
+
+        room.on(RoomEvent.Disconnected, () => clearInterval(timer));
+        return () => clearInterval(timer);
+    }, [meetingStartTime, room]);
+
+    // Attach local video
     React.useEffect(() => {
         const cameraPub = localParticipant?.getTrackPublication(Track.Source.Camera);
         const videoEl = localVideoRef.current;
-
         if (cameraPub?.track && videoEl) {
             cameraPub.track.detach();
             cameraPub.track.attach(videoEl);
-
             return () => {
                 cameraPub?.track?.detach(videoEl);
             };
         }
     }, [localParticipant, isCameraEnabled]);
 
-    // Tracks for remote participants
+    // LiveKit-managed remote tracks
     const remoteTracks = useTracks(
         [
             { source: Track.Source.Camera, withPlaceholder: true },
             { source: Track.Source.ScreenShare, withPlaceholder: false },
         ],
-        { onlySubscribed: false }
+        { onlySubscribed: true }
     );
 
     const audioTracks = useTracks(
@@ -412,41 +435,16 @@ export default function CustomVideoConference() {
         { onlySubscribed: true }
     );
 
-    // Toggle handlers
+    // Control handlers
     const toggleMic = async () => {
         await room.localParticipant.setMicrophoneEnabled(!isMicrophoneEnabled);
     };
-
     const toggleCam = async () => {
         await room.localParticipant.setCameraEnabled(!isCameraEnabled);
     };
-    React.useEffect(() => {
-        if (meetingStartTime) {
-            const timer = setInterval(() => {
-                const now = new Date();
-                const diff = now.getTime() - meetingStartTime.getTime();
-
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-                setElapsedTime(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-            }, 1000);
-
-            return () => clearInterval(timer);
-        }
-    }, [meetingStartTime]);
-
-    // Format current date
-    const formatDate = (date: Date) => {
-        const options: Intl.DateTimeFormatOptions = {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
-        };
-        return date.toLocaleDateString('en-US', options);
+    const toggleEmoji = async () => {
+        // await room.localParticipant.setCameraEnabled(!isCameraEnabled);
     };
-
     const toggleScreen = async () => {
         try {
             await room.localParticipant.setScreenShareEnabled(
@@ -456,102 +454,32 @@ export default function CustomVideoConference() {
             console.error("Screen Share Failed:", e);
         }
     };
-
     const leaveRoom = async () => {
         await room.disconnect();
         window.location.href = "/";
     };
-    // React.useEffect(() => {
-    //     if (room.state === "connected") {
-    //         participants.forEach((p:any) => {
-    //             // if (p.sid !== localParticipant?.sid && p?.tracks) {
-    //             //     Array.from(p?.tracks.values()).forEach((pub) => {
-    //             //         if (pub.source === Track.Source.Camera && !pub.isSubscribed) {
-    //             //             pub.setSubscribed(true).catch(console.error);
-    //             //         }
-    //             //     });
-    //             // }
-    //             // BUILD FIXED
-    //             if (p.sid !== localParticipant?.sid) {
-    //                 p?.getTracks().forEach((pub: { source: Track.Source; isSubscribed: any; setSubscribed: (arg0: boolean) => Promise<any>; }) => {
-    //                     if (pub.source === Track.Source.Camera && !pub.isSubscribed) {
-    //                         pub.setSubscribed(true).catch(console.error);
-    //                     }
-    //                 });
-    //             }
-
-    //         });
-    //     }
-    // }, [room.state, participants, localParticipant]);
-    if (room.state === "connected") {
-        participants.forEach((p: any) => {
-            if (p.sid !== localParticipant?.sid) {
-                const pub = p.getTrackPublication(Track.Source.Camera);
-                if (pub && !pub.isSubscribed && pub.setSubscribed) {
-                    pub.setSubscribed(true).catch(console.error);
-                }
-            }
-        });
-    }
-
-    const screenSharePub = localParticipant?.getTrackPublication(Track.Source.ScreenShare);
-    React.useEffect(() => {
-        participants.forEach((p) => {
-            if (p.sid !== localParticipant?.sid) {
-                const pub: any = p.getTrackPublication(Track.Source.Camera);
-                if (pub && !pub.isSubscribed && pub.setSubscribed) {
-                    const maybePromise = pub.setSubscribed(true);
-                    if (maybePromise && maybePromise.catch) {
-                        maybePromise.catch(console.error);
-                    }
-                }
-            }
-        });
-    }, [participants, localParticipant]);
-
 
     return (
         <div className="flex flex-col h-screen w-full bg-white p-2 sm:p-4 text-black">
+            {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2 sm:gap-0">
                 <div className="text-left text-lg font-medium py-2">
                     Friends Catch Up Call
                 </div>
                 <div className="flex items-center gap-4">
-                    {/* Calendar with Date */}
                     <div className="flex items-center gap-2">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-600">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                            <line x1="16" y1="2" x2="16" y2="6" />
-                            <line x1="8" y1="2" x2="8" y2="6" />
-                            <line x1="3" y1="10" x2="21" y2="10" />
-                        </svg>
-                        <div className="text-sm font-medium text-gray-700">
-                            {formatDate(currentTime)}
-                        </div>
-                    </div>
-
-                    {/* Clock with Time */}
-                    <div className="flex items-center gap-2">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-600">
-                            <circle cx="12" cy="12" r="10" />
-                            <polyline points="12,6 12,12 16,14" />
-                        </svg>
-                        <div className="text-sm font-medium text-gray-700">
-                            {elapsedTime}
-                        </div>
+                        <div className="text-sm font-medium text-gray-700">{elapsedTime}</div>
                     </div>
                 </div>
             </div>
 
-            {/* Local Video */}
-
-
-            {/* Participant Layout */}
+            {/* Main Video Area */}
             <div className="flex flex-col h-full gap-4">
-                {/* Agar koi screen share kar raha hai */}
-                {remoteTracks.some((t) => t.publication?.source === Track.Source.ScreenShare) ? (
+                {remoteTracks.some(
+                    (t) => t.publication?.source === Track.Source.ScreenShare
+                ) ? (
+                    // Someone sharing screen
                     <div className="flex-1 relative w-full rounded-lg overflow-hidden shadow-lg border border-gray-200 bg-[#A7A7A7]">
-                        {/* Screen Share Track */}
                         {remoteTracks
                             .filter((t) => t.publication?.source === Track.Source.ScreenShare)
                             .map((trackRef) => {
@@ -571,17 +499,9 @@ export default function CustomVideoConference() {
                                     />
                                 );
                             })}
-
-                        {/* Upar badge jese tumhare code me tha */}
-                        <div className="absolute top-2 left-2 bg-[#68696E] text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2 z-10">
-                            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-600">
-                                {localParticipant?.name?.[0]?.toUpperCase() || "?"}
-                            </div>
-                            <span>You</span>
-                        </div>
                     </div>
                 ) : (
-                    // Agar screen share nahi ho rahi
+                    // Default local video
                     <div className="flex-1 relative w-full rounded-lg overflow-hidden shadow-lg border border-gray-200 bg-[#A7A7A7]">
                         {isCameraEnabled ? (
                             <video
@@ -600,55 +520,17 @@ export default function CustomVideoConference() {
                                 <span className="text-xs text-gray-500">Camera is off</span>
                             </div>
                         )}
-
-                        {/* Badge */}
-                        <div className="absolute top-2 left-2 bg-[#68696E] text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2 z-10">
-                            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-600">
-                                {localParticipant?.name?.[0]?.toUpperCase() || "?"}
-                            </div>
-                            <span>You</span>
-                        </div>
                     </div>
                 )}
 
-                {/* Always show participants (including camera tracks) */}
+                {/* Remote participants grid */}
                 {participants.filter((p) => p.sid !== localParticipant?.sid).length > 0 && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 h-[25vh] overflow-y-auto">
-                        {/* {remoteTracks
-                            .filter((t) => t.publication?.source === Track.Source.Camera)
-                            .map((trackRef) => {
-                                const track = trackRef.publication?.track;
-                                return (
-                                    <div
-                                        key={trackRef.publication?.trackSid}
-                                        className="relative rounded-lg overflow-hidden shadow-lg border border-gray-200 flex items-center justify-center bg-[#A7A7A7]"
-                                    >
-                                        {track ? (
-                                            <video
-                                                ref={(el) => {
-                                                    if (el && track) {
-                                                        track.detach();
-                                                        track.attach(el);
-                                                    }
-                                                }}
-                                                autoPlay
-                                                playsInline
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <div className="flex items-center justify-center text-gray-600 font-bold text-xl">
-                                                ?
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })} */}
                         {participants
                             .filter((p) => p.sid !== localParticipant?.sid)
                             .map((p) => {
                                 const pub = p.getTrackPublication(Track.Source.Camera);
                                 const track = pub?.track;
-
                                 return (
                                     <div
                                         key={p.sid}
@@ -674,20 +556,17 @@ export default function CustomVideoConference() {
                                                 <span className="mt-2 text-gray-700 font-medium">
                                                     {p.name || "Guest"}
                                                 </span>
-                                                <span className="text-xs text-gray-500">Camera is off</span>
+                                                <span className="text-xs text-gray-500">
+                                                    Camera is off
+                                                </span>
                                             </div>
                                         )}
                                     </div>
                                 );
                             })}
-
                     </div>
                 )}
             </div>
-
-
-
-
 
             {/* Audio for remote participants */}
             {audioTracks.map((trackRef: any) => (
@@ -697,15 +576,12 @@ export default function CustomVideoConference() {
                 />
             ))}
 
-            {/* Bottom Control Bar */}
-            {/* add a horizontal divider */}
+            {/* Control Bar */}
             <div className="w-full h-px bg-gray-300 my-4"></div>
             <div className="flex items-center justify-center sm:justify-end px-2 sm:px-10 py-3">
                 <div className="flex flex-wrap gap-6 sm:gap-10 justify-center">
                     <ControlIcon
-                        icon={
-                            isMicrophoneEnabled ? <Mic size={20} /> : <MicOff size={20} />
-                        }
+                        icon={isMicrophoneEnabled ? <Mic size={20} /> : <MicOff size={20} />}
                         label="Mic"
                         onClick={toggleMic}
                     />
@@ -740,8 +616,8 @@ function ControlIcon({
     icon,
     label,
     onClick,
-    bgColor = "bg-gray-100",   // default color
-    hoverColor = "hover:bg-gray-200", // default hover
+    bgColor = "bg-gray-100",
+    hoverColor = "hover:bg-gray-200",
 }: {
     icon: React.ReactNode;
     label: string;
@@ -754,12 +630,10 @@ function ControlIcon({
             onClick={onClick}
             className="flex flex-col items-center justify-center gap-1 text-gray-700 hover:text-black"
         >
-            <div className={`${bgColor} ${hoverColor}  p-3 rounded-xl shadow-md`}>
+            <div className={`${bgColor} ${hoverColor} p-3 rounded-xl shadow-md`}>
                 {icon}
             </div>
             <span className="text-xs mt-1 font-medium">{label}</span>
         </button>
     );
 }
-
-
