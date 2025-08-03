@@ -19,7 +19,7 @@ const ProfilePage = () => {
       <LeftSidebar activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="!text-[#262A35] rounded-[26px] mx-[30px] p-[20px] mt-[20px] bg-[rgba(248,248,248,0.7)] border border-[#E0E3E8] flex flex-wrap flex-col items-center justify-center max-w-[335px]">
         <div className="!bg-white p-[10px] flex items-center justify-center flex-col w-full rounded-[20px] border border-[#EBEDF1]">
-          <Image
+          <img
             src="/images/avatars/default-man.png"
             alt="Profile Image"
             width={100}
