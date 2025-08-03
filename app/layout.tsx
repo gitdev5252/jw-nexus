@@ -16,21 +16,17 @@ const urbanist = Urbanist({
 
 export const metadata: Metadata = {
   title: {
-    default: 'JW Nexus | Conference app build with LiveKit open source',
+    default: 'JW Nexus | Conference app build with JWNexus open source',
     template: '%s',
   },
   description:
-    'LiveKit is an open source WebRTC project that gives you everything needed to build scalable and real-time audio and/or video experiences in your applications.',
-  twitter: {
-    creator: '@livekitted',
-    site: '@livekitted',
-    card: 'summary_large_image',
-  },
+    'JWNexus is an open source WebRTC project that gives you everything needed to build scalable and real-time audio and/or video experiences in your applications.',
+
   openGraph: {
-    url: 'https://meet.livekit.io',
+    url: 'https://jw-nexus.netlify.app/',
     images: [
       {
-        url: 'https://meet.livekit.io/images/livekit-meet-open-graph.png',
+        url: '/images/call.png',
         width: 2000,
         height: 1000,
         type: 'image/png',
@@ -46,10 +42,10 @@ export const metadata: Metadata = {
     apple: [
       {
         rel: 'apple-touch-icon',
-        url: '/images/livekit-apple-touch.png',
+        url: '/favicon.ico',
         sizes: '180x180',
       },
-      { rel: 'mask-icon', url: '/images/livekit-safari-pinned-tab.svg', color: '#070707' },
+      { rel: 'mask-icon', url: '/images/logo.svg', color: '#070707' },
     ],
   },
 };
