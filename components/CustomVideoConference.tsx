@@ -393,7 +393,7 @@ export default function CustomVideoConference() {
             cameraPub.track.attach(videoEl);
 
             return () => {
-                cameraPub.track.detach(videoEl);
+                cameraPub?.track?.detach(videoEl);
             };
         }
     }, [localParticipant, isCameraEnabled]);
@@ -463,14 +463,23 @@ export default function CustomVideoConference() {
     };
     React.useEffect(() => {
         if (room.state === "connected") {
-            participants.forEach((p) => {
-                if (p.sid !== localParticipant?.sid && p.tracks) {
-                    Array.from(p.tracks.values()).forEach((pub) => {
+            participants.forEach((p:any) => {
+                // if (p.sid !== localParticipant?.sid && p?.tracks) {
+                //     Array.from(p?.tracks.values()).forEach((pub) => {
+                //         if (pub.source === Track.Source.Camera && !pub.isSubscribed) {
+                //             pub.setSubscribed(true).catch(console.error);
+                //         }
+                //     });
+                // }
+                // BUILD FIXED
+                if (p.sid !== localParticipant?.sid) {
+                    p?.getTracks().forEach((pub: { source: Track.Source; isSubscribed: any; setSubscribed: (arg0: boolean) => Promise<any>; }) => {
                         if (pub.source === Track.Source.Camera && !pub.isSubscribed) {
                             pub.setSubscribed(true).catch(console.error);
                         }
                     });
                 }
+
             });
         }
     }, [room.state, participants, localParticipant]);
@@ -478,7 +487,7 @@ export default function CustomVideoConference() {
     React.useEffect(() => {
         participants.forEach((p) => {
             if (p.sid !== localParticipant?.sid) {
-                const pub = p.getTrackPublication(Track.Source.Camera);
+                const pub : any = p.getTrackPublication(Track.Source.Camera);
                 if (pub && !pub.isSubscribed && pub.setSubscribed) {
                     const maybePromise = pub.setSubscribed(true);
                     if (maybePromise && maybePromise.catch) {
@@ -632,9 +641,9 @@ export default function CustomVideoConference() {
 
 
             {/* Audio for remote participants */}
-            {audioTracks.map((trackRef) => (
+            {audioTracks.map((trackRef:any) => (
                 <AudioTrack
-                    key={trackRef.publication.trackSid}
+                    key={trackRef?.publication?.trackSid}
                     trackRef={trackRef}
                 />
             ))}
