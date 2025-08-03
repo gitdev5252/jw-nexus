@@ -461,33 +461,44 @@ export default function CustomVideoConference() {
         await room.disconnect();
         window.location.href = "/";
     };
-    React.useEffect(() => {
-        if (room.state === "connected") {
-            participants.forEach((p:any) => {
-                // if (p.sid !== localParticipant?.sid && p?.tracks) {
-                //     Array.from(p?.tracks.values()).forEach((pub) => {
-                //         if (pub.source === Track.Source.Camera && !pub.isSubscribed) {
-                //             pub.setSubscribed(true).catch(console.error);
-                //         }
-                //     });
-                // }
-                // BUILD FIXED
-                if (p.sid !== localParticipant?.sid) {
-                    p?.getTracks().forEach((pub: { source: Track.Source; isSubscribed: any; setSubscribed: (arg0: boolean) => Promise<any>; }) => {
-                        if (pub.source === Track.Source.Camera && !pub.isSubscribed) {
-                            pub.setSubscribed(true).catch(console.error);
-                        }
-                    });
-                }
+    // React.useEffect(() => {
+    //     if (room.state === "connected") {
+    //         participants.forEach((p:any) => {
+    //             // if (p.sid !== localParticipant?.sid && p?.tracks) {
+    //             //     Array.from(p?.tracks.values()).forEach((pub) => {
+    //             //         if (pub.source === Track.Source.Camera && !pub.isSubscribed) {
+    //             //             pub.setSubscribed(true).catch(console.error);
+    //             //         }
+    //             //     });
+    //             // }
+    //             // BUILD FIXED
+    //             if (p.sid !== localParticipant?.sid) {
+    //                 p?.getTracks().forEach((pub: { source: Track.Source; isSubscribed: any; setSubscribed: (arg0: boolean) => Promise<any>; }) => {
+    //                     if (pub.source === Track.Source.Camera && !pub.isSubscribed) {
+    //                         pub.setSubscribed(true).catch(console.error);
+    //                     }
+    //                 });
+    //             }
 
-            });
-        }
-    }, [room.state, participants, localParticipant]);
+    //         });
+    //     }
+    // }, [room.state, participants, localParticipant]);
+    if (room.state === "connected") {
+        participants.forEach((p: any) => {
+            if (p.sid !== localParticipant?.sid) {
+                const pub = p.getTrackPublication(Track.Source.Camera);
+                if (pub && !pub.isSubscribed && pub.setSubscribed) {
+                    pub.setSubscribed(true).catch(console.error);
+                }
+            }
+        });
+    }
+
     const screenSharePub = localParticipant?.getTrackPublication(Track.Source.ScreenShare);
     React.useEffect(() => {
         participants.forEach((p) => {
             if (p.sid !== localParticipant?.sid) {
-                const pub : any = p.getTrackPublication(Track.Source.Camera);
+                const pub: any = p.getTrackPublication(Track.Source.Camera);
                 if (pub && !pub.isSubscribed && pub.setSubscribed) {
                     const maybePromise = pub.setSubscribed(true);
                     if (maybePromise && maybePromise.catch) {
@@ -603,7 +614,7 @@ export default function CustomVideoConference() {
                 {/* Always show participants (including camera tracks) */}
                 {participants.filter((p) => p.sid !== localParticipant?.sid).length > 0 && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 h-[25vh] overflow-y-auto">
-                        {remoteTracks
+                        {/* {remoteTracks
                             .filter((t) => t.publication?.source === Track.Source.Camera)
                             .map((trackRef) => {
                                 const track = trackRef.publication?.track;
@@ -631,7 +642,45 @@ export default function CustomVideoConference() {
                                         )}
                                     </div>
                                 );
+                            })} */}
+                        {participants
+                            .filter((p) => p.sid !== localParticipant?.sid)
+                            .map((p) => {
+                                const pub = p.getTrackPublication(Track.Source.Camera);
+                                const track = pub?.track;
+
+                                return (
+                                    <div
+                                        key={p.sid}
+                                        className="relative rounded-lg overflow-hidden shadow-lg border border-gray-200 flex items-center justify-center bg-[#A7A7A7]"
+                                    >
+                                        {track ? (
+                                            <video
+                                                ref={(el) => {
+                                                    if (el && track) {
+                                                        track.detach();
+                                                        track.attach(el);
+                                                    }
+                                                }}
+                                                autoPlay
+                                                playsInline
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="flex flex-col items-center justify-center w-full h-full">
+                                                <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-lg font-bold text-gray-600">
+                                                    {p.name?.[0]?.toUpperCase() || "?"}
+                                                </div>
+                                                <span className="mt-2 text-gray-700 font-medium">
+                                                    {p.name || "Guest"}
+                                                </span>
+                                                <span className="text-xs text-gray-500">Camera is off</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
                             })}
+
                     </div>
                 )}
             </div>
@@ -641,7 +690,7 @@ export default function CustomVideoConference() {
 
 
             {/* Audio for remote participants */}
-            {audioTracks.map((trackRef:any) => (
+            {audioTracks.map((trackRef: any) => (
                 <AudioTrack
                     key={trackRef?.publication?.trackSid}
                     trackRef={trackRef}

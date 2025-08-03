@@ -28,7 +28,7 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
             <button
               key={item.id}
 
-              className={`${styles.navItem} ${activeTab === item.id ? `blur-[2px] ${styles.activeNavItem}` : 'hover:bg-white/10'
+              className={`${styles.navItem} ${activeTab === item.id ? `${styles.activeNavItem}` : 'hover:bg-white/10'
                 }`}
 
               onClick={() => onTabChange?.(item.id)}
@@ -46,8 +46,8 @@ export function LeftSidebar({ activeTab = 'video', onTabChange }: LeftSidebarPro
             alt="User Avatar"
             width={60}
             height={60}
-            className="w-[60px] h-[60px] border-4 border-gray-200 rounded-[16px] object-cover"
-            onClick={() => router.push('/profile')}
+            className="w-[60px] h-[60px] border-4 border-gray-200 rounded-[16px] object-cover cursor-pointer hover:border-blue-300 transition-colors"
+            onClick={() => onTabChange?.('profile')}
           />
         </div>
       </div>
