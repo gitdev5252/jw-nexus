@@ -15,7 +15,7 @@ const ChatSidebar: React.FC = () => {
         <img
           src="/images/icons/magnifying-glass.svg"
           alt="Logo"
-          className="w-[30px] h-[30px] rounded-full"
+          className="w-[30px] h-[30px] rounded-full p-[5px] bg-gray-500"
         />
         <input
           className="w-full h-[46px] pl-[10px] border-none focus:outline-none focus:border-none"
