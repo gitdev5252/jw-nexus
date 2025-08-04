@@ -557,10 +557,13 @@ export default function CustomVideoConference() {
                                 <span className="text-xs text-gray-500">Camera is off</span>
                             </div>
                         )}
-
-                        <div className="absolute top-2 left-2 bg-black/70 text-white text-sm font-semibold px-3 py-1 rounded-md shadow">
-                            You
+                        <div className="absolute top-2 left-2 bg-[#67696D]/60 text-white text-sm font-semibold px-4 py-2.5 rounded-md shadow flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-xs font-bold text-gray-600">
+                                {localParticipant?.name?.[0]?.toUpperCase() || "?"}
+                            </div>
+                            <span>You</span>
                         </div>
+
 
                         <button
                             onClick={() => {
@@ -569,10 +572,10 @@ export default function CustomVideoConference() {
                                     videoElement.requestFullscreen();
                                 }
                             }}
-                            className="absolute top-2 right-2 bg-black/70 hover:bg-black/90 text-white p-2 rounded-md shadow"
+                            className="absolute top-2 right-2 bg-[#67696D]/60 hover:bg-black/90 text-white p-3 rounded-md shadow"
                             title="Fullscreen"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4" />
                             </svg>
                         </button>
