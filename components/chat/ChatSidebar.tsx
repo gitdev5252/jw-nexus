@@ -4,8 +4,8 @@ import React, { useContext } from 'react';
 const ChatSidebar: React.FC = () => {
   // const { contacts, selectContact } = useContext(ChatContext);
   const contacts = [
-    { id: 1, name: 'Alice', lastMessage: 'Hey there!' },
-    { id: 2, name: 'Bob', lastMessage: 'See you later!' },
+    { id: 1, name: 'Alice', lastMessage: 'Hey there!', img: '/images/avatars/Brenda.png' },
+    { id: 2, name: 'Bob', lastMessage: 'See you later!', img: '/images/avatars/Peter.png' },
   ];
 
   return (
@@ -33,7 +33,11 @@ const ChatSidebar: React.FC = () => {
             className="flex items-center gap-[10px] p-[10px] hover:bg-gray-100 cursor-pointer justify-between"
           >
             <div className="flex items-center gap-[10px]">
-              <img className="w-[42px] h-[42px] rounded-[50%]" />
+              <img
+                className="w-[42px] h-[42px] rounded-[50%]"
+                alt={contact.name}
+                src={contact.img}
+              />
               <div>
                 <p className="font-semibold text-gray-800">{contact.name}</p>
                 <span className="text-sm text-gray-500">{contact.lastMessage}</span>
@@ -58,7 +62,11 @@ const ChatSidebar: React.FC = () => {
               className="flex items-center gap-[10px] p-[10px] hover:bg-gray-100 cursor-pointer justify-between"
             >
               <div className="flex items-center gap-[10px]">
-                <img className="w-[42px] h-[42px] rounded-[50%]" />
+                <img
+                  className="w-[42px] h-[42px] rounded-[50%]"
+                  alt={contact.name}
+                  src={contact.img}
+                />
                 <div>
                   <p className="font-semibold text-gray-800">{contact.name}</p>
                   <span className="text-sm text-gray-500">{contact.lastMessage}</span>
