@@ -28,7 +28,7 @@ export default function MeetingParticipantList() {
   const getAvatarColor = (name: string) => {
     const colors = [
       'bg-blue-400',
-      'bg-green-400', 
+      'bg-green-400',
       'bg-purple-400',
       'bg-pink-400',
       'bg-yellow-400',
@@ -69,24 +69,46 @@ export default function MeetingParticipantList() {
 
       {/* Call Details Options */}
       <div className="px-6 mb-4">
-        <div className="bg-[#F4F4F5] flex gap-6 px-4 py-3 rounded-3xl justify-between">
+        <div className="bg-[#F4F4F5] flex gap-6 px-4 py-3 rounded-4xl justify-between">
           {callDetailsOptions.map((option) => (
             <button
               key={option.id}
               onClick={() => setActiveTab(option.id)}
-              className={`flex items-center gap-2 transition text-[#262A35] ${
-                activeTab === option.id ? 'opacity-100' : 'opacity-60 hover:opacity-80'
-              }`}
+              className={`relative flex items-center gap-2 transition text-[#262A35] ${activeTab === option.id
+                  ? 'px-6 py-4 rounded-2xl -mx-5 -my-5 scale-110 shadow-xl drop-shadow-lg border-2 border-white bg-transparent'
+                  : 'opacity-60 hover:opacity-80'
+                }`}
+              style={{
+                boxShadow: activeTab === option.id ? '0 4px 24px rgba(0,0,0,0.10)' : undefined,
+              }}
             >
-              <img src={option.icon} alt={option.label} className="w-5 h-5" />
-              <span className="text-sm">{option.label}</span>
+              {/* Small, subtle gradient just in the middle */}
+              {activeTab === option.id && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div
+                    className="w-[100%] h-[100%] rounded-full opacity-30"
+                    style={{
+                      background: `radial-gradient(circle at center,
+            #65c670 0%,
+            #abe6ff 60%,
+            #bb93f8 100%)`,
+                      filter: "blur(10px)",
+                    }}
+                  ></div>
+                </div>
+              )}
+
+              <img src={option.icon} alt={option.label} className="w-5 h-5 relative z-10" />
+              <span className="text-sm relative z-10">{option.label}</span>
             </button>
+
+
           ))}
         </div>
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 px-6 pb-6 overflow-hidden">
+      <div className="flex-1 px-6 pb-6 overflow-hidden mt-4">
         {renderContent()}
       </div>
     </div>

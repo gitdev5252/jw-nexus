@@ -367,6 +367,7 @@ import {
 // import React from "react";
 import React from "react";
 import { ParticipantVideo } from "./ParticipantVideo";
+import { ScreenShareVideo } from "./ScreenShareVideo";
 //
 export default function CustomVideoConference() {
     const room = useRoomContext();
@@ -382,6 +383,9 @@ export default function CustomVideoConference() {
     const [meetingStartTime, setMeetingStartTime] = React.useState<Date | null>(
         initialStart ? new Date(initialStart) : null
     );
+    const [handRaised, setHandRaised] = React.useState(false);
+    const [remoteHands, setRemoteHands] = React.useState<Record<string, boolean>>({});
+    const [remoteEmojis, setRemoteEmojis] = React.useState<Record<string, string>>({});
 
     const [elapsedTime, setElapsedTime] = React.useState(() => {
         if (initialStart) {
@@ -492,6 +496,82 @@ export default function CustomVideoConference() {
     const localTrack = localParticipant
         ?.getTrackPublication(Track.Source.Camera)
         ?.track;
+    const toggleHand = () => {
+        const newValue = !handRaised;
+        setHandRaised(newValue);
+
+        room.localParticipant.publishData(
+            new TextEncoder().encode(JSON.stringify({ type: "hand", raised: newValue })),
+            { reliable: true }
+        );
+    };
+    const sendEmoji = () => {
+        const emoji = "🙂";
+        room.localParticipant.publishData(
+            new TextEncoder().encode(JSON.stringify({ type: "emoji", value: emoji })),
+            { reliable: true }
+        );
+
+        // Show it locally too
+        setRemoteEmojis((prev) => ({ ...prev, [localParticipant?.sid ?? "me"]: emoji }));
+
+        setTimeout(() => {
+            setRemoteEmojis((prev) => {
+                const newMap = { ...prev };
+                delete newMap[localParticipant?.sid ?? "me"];
+                return newMap;
+            });
+        }, 3000); // hide after 3 sec
+    };
+
+    React.useEffect(() => {
+        const handleData = (payload: Uint8Array, participant: any) => {
+            try {
+                const msg = JSON.parse(new TextDecoder().decode(payload));
+                if (msg.type === "hand") {
+                    setRemoteHands((prev) => ({
+                        ...prev,
+                        [participant.sid]: msg.raised,
+                    }));
+                }
+            } catch (err) {
+                console.error("Failed to parse data", err);
+            }
+        };
+
+        room.on(RoomEvent.DataReceived, handleData);
+        return () => {
+            room.off(RoomEvent.DataReceived, handleData);
+        };
+    }, [room]);
+    React.useEffect(() => {
+        const handleData = (payload: Uint8Array, participant: any) => {
+            try {
+                const msg = JSON.parse(new TextDecoder().decode(payload));
+                if (msg.type === "emoji") {
+                    setRemoteEmojis((prev) => ({
+                        ...prev,
+                        [participant.sid]: msg.value,
+                    }));
+                    setTimeout(() => {
+                        setRemoteEmojis((prev) => {
+                            const newMap = { ...prev };
+                            delete newMap[participant.sid];
+                            return newMap;
+                        });
+                    }, 3000);
+                }
+            } catch (err) {
+                console.error("Failed to parse data", err);
+            }
+        };
+
+        room.on(RoomEvent.DataReceived, handleData);
+        return () => {
+            room.off(RoomEvent.DataReceived, handleData);
+        };
+    }, [room]);
+
 
     return (
         <div className="flex flex-col h-screen w-full bg-white p-2 sm:p-4 text-black relative">
@@ -519,20 +599,28 @@ export default function CustomVideoConference() {
                             .map((trackRef) => {
                                 const track = trackRef.publication?.track;
                                 return (
-                                    <video
-                                        key={trackRef.publication?.trackSid}
-                                        ref={(el) => {
-                                            if (el && track) {
-                                                track.detach();
-                                                track.attach(el);
-                                            }
-                                        }}
-                                        autoPlay
-                                        playsInline
-                                        className="absolute top-0 left-0 w-full h-full object-contain"
-                                    />
+                                    <div key={trackRef.publication?.trackSid} className="relative w-full h-full">
+                                        <ScreenShareVideo track={track} />
+
+                                        {/* Fullscreen button */}
+                                        <button
+                                            onClick={() => {
+                                                const videoElement = document.querySelector("video");
+                                                if (videoElement && videoElement.requestFullscreen) {
+                                                    videoElement.requestFullscreen();
+                                                }
+                                            }}
+                                            className="absolute top-2 right-2 bg-black/70 hover:bg-black/90 text-white p-2 rounded-md shadow"
+                                            title="Fullscreen"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 );
                             })}
+
                     </div>
                 ) : (
                     // Default local video
@@ -548,10 +636,13 @@ export default function CustomVideoConference() {
                                 <span className="text-xs text-gray-500">Camera is off</span>
                             </div>
                         )}
-
-                        <div className="absolute top-2 left-2 bg-black/70 text-white text-sm font-semibold px-3 py-1 rounded-md shadow">
-                            You
+                        <div className="absolute top-2 left-2 bg-[#67696D]/60 text-white text-sm font-semibold px-4 py-2.5 rounded-md shadow flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-xs font-bold text-gray-600">
+                                {localParticipant?.name?.[0]?.toUpperCase() || "?"}
+                            </div>
+                            <span>You</span>
                         </div>
+
 
                         <button
                             onClick={() => {
@@ -560,10 +651,10 @@ export default function CustomVideoConference() {
                                     videoElement.requestFullscreen();
                                 }
                             }}
-                            className="absolute top-2 right-2 bg-black/70 hover:bg-black/90 text-white p-2 rounded-md shadow"
+                            className="absolute top-2 right-2 bg-[#67696D]/60 hover:bg-black/90 text-white p-3 rounded-md shadow"
                             title="Fullscreen"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4" />
                             </svg>
                         </button>
@@ -590,6 +681,18 @@ export default function CustomVideoConference() {
                                             <div className="flex flex-col items-center justify-center w-full h-full">
                                                 <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-lg font-bold text-gray-600">
                                                     {p.name?.[0]?.toUpperCase() || "?"}
+                                                    {remoteHands[p.sid] && (
+                                                        <div className="absolute top-2 right-2 bg-yellow-400 text-white px-2 py-1 rounded-md text-xs font-bold shadow">
+                                                            ✋
+                                                        </div>
+                                                    )}
+                                                    {remoteEmojis[p.sid] && (
+                                                        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-white/80 rounded-full px-3 py-1 text-xl shadow animate-bounce">
+                                                            {remoteEmojis[p.sid]}
+                                                        </div>
+                                                    )}
+
+
                                                 </div>
                                                 <span className="mt-2 text-gray-700 font-medium">
                                                     {p.name || "Guest"}
@@ -632,8 +735,16 @@ export default function CustomVideoConference() {
                         label="Display"
                         onClick={toggleScreen}
                     />
-                    <ControlIcon icon={<Hand size={20} />} label="Hand" />
-                    <ControlIcon icon={<Smile size={20} />} label="Emoji" />
+                    <ControlIcon
+                        icon={<Hand size={20} color={handRaised ? "blue" : "black"} />}
+                        label={handRaised ? "Lower" : "Raise"}
+                        onClick={toggleHand}
+                    />
+                    <ControlIcon
+                        icon={<Smile size={20} />}
+                        label="Emoji"
+                        onClick={sendEmoji}
+                    />
                     <ControlIcon icon={<Languages size={20} />} label="Transcript" />
                     <div className="w-px h-18 bg-gray-300 mx-8"></div>
                     <ControlIcon
