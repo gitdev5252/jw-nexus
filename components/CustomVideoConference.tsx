@@ -383,6 +383,9 @@ export default function CustomVideoConference() {
     const [meetingStartTime, setMeetingStartTime] = React.useState<Date | null>(
         initialStart ? new Date(initialStart) : null
     );
+    const [handRaised, setHandRaised] = React.useState(false);
+    const [remoteHands, setRemoteHands] = React.useState<Record<string, boolean>>({});
+    const [remoteEmojis, setRemoteEmojis] = React.useState<Record<string, string>>({});
 
     const [elapsedTime, setElapsedTime] = React.useState(() => {
         if (initialStart) {
@@ -493,6 +496,82 @@ export default function CustomVideoConference() {
     const localTrack = localParticipant
         ?.getTrackPublication(Track.Source.Camera)
         ?.track;
+    const toggleHand = () => {
+        const newValue = !handRaised;
+        setHandRaised(newValue);
+
+        room.localParticipant.publishData(
+            new TextEncoder().encode(JSON.stringify({ type: "hand", raised: newValue })),
+            { reliable: true }
+        );
+    };
+    const sendEmoji = () => {
+        const emoji = "🙂";
+        room.localParticipant.publishData(
+            new TextEncoder().encode(JSON.stringify({ type: "emoji", value: emoji })),
+            { reliable: true }
+        );
+
+        // Show it locally too
+        setRemoteEmojis((prev) => ({ ...prev, [localParticipant?.sid ?? "me"]: emoji }));
+
+        setTimeout(() => {
+            setRemoteEmojis((prev) => {
+                const newMap = { ...prev };
+                delete newMap[localParticipant?.sid ?? "me"];
+                return newMap;
+            });
+        }, 3000); // hide after 3 sec
+    };
+
+    React.useEffect(() => {
+        const handleData = (payload: Uint8Array, participant: any) => {
+            try {
+                const msg = JSON.parse(new TextDecoder().decode(payload));
+                if (msg.type === "hand") {
+                    setRemoteHands((prev) => ({
+                        ...prev,
+                        [participant.sid]: msg.raised,
+                    }));
+                }
+            } catch (err) {
+                console.error("Failed to parse data", err);
+            }
+        };
+
+        room.on(RoomEvent.DataReceived, handleData);
+        return () => {
+            room.off(RoomEvent.DataReceived, handleData);
+        };
+    }, [room]);
+    React.useEffect(() => {
+        const handleData = (payload: Uint8Array, participant: any) => {
+            try {
+                const msg = JSON.parse(new TextDecoder().decode(payload));
+                if (msg.type === "emoji") {
+                    setRemoteEmojis((prev) => ({
+                        ...prev,
+                        [participant.sid]: msg.value,
+                    }));
+                    setTimeout(() => {
+                        setRemoteEmojis((prev) => {
+                            const newMap = { ...prev };
+                            delete newMap[participant.sid];
+                            return newMap;
+                        });
+                    }, 3000);
+                }
+            } catch (err) {
+                console.error("Failed to parse data", err);
+            }
+        };
+
+        room.on(RoomEvent.DataReceived, handleData);
+        return () => {
+            room.off(RoomEvent.DataReceived, handleData);
+        };
+    }, [room]);
+
 
     return (
         <div className="flex flex-col h-screen w-full bg-white p-2 sm:p-4 text-black relative">
@@ -602,6 +681,18 @@ export default function CustomVideoConference() {
                                             <div className="flex flex-col items-center justify-center w-full h-full">
                                                 <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-lg font-bold text-gray-600">
                                                     {p.name?.[0]?.toUpperCase() || "?"}
+                                                    {remoteHands[p.sid] && (
+                                                        <div className="absolute top-2 right-2 bg-yellow-400 text-white px-2 py-1 rounded-md text-xs font-bold shadow">
+                                                            ✋
+                                                        </div>
+                                                    )}
+                                                    {remoteEmojis[p.sid] && (
+                                                        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-white/80 rounded-full px-3 py-1 text-xl shadow animate-bounce">
+                                                            {remoteEmojis[p.sid]}
+                                                        </div>
+                                                    )}
+
+
                                                 </div>
                                                 <span className="mt-2 text-gray-700 font-medium">
                                                     {p.name || "Guest"}
@@ -644,8 +735,16 @@ export default function CustomVideoConference() {
                         label="Display"
                         onClick={toggleScreen}
                     />
-                    <ControlIcon icon={<Hand size={20} />} label="Hand" />
-                    <ControlIcon icon={<Smile size={20} />} label="Emoji" />
+                    <ControlIcon
+                        icon={<Hand size={20} color={handRaised ? "blue" : "black"} />}
+                        label={handRaised ? "Lower" : "Raise"}
+                        onClick={toggleHand}
+                    />
+                    <ControlIcon
+                        icon={<Smile size={20} />}
+                        label="Emoji"
+                        onClick={sendEmoji}
+                    />
                     <ControlIcon icon={<Languages size={20} />} label="Transcript" />
                     <div className="w-px h-18 bg-gray-300 mx-8"></div>
                     <ControlIcon
