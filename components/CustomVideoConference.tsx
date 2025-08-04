@@ -367,6 +367,7 @@ import {
 // import React from "react";
 import React from "react";
 import { ParticipantVideo } from "./ParticipantVideo";
+import { ScreenShareVideo } from "./ScreenShareVideo";
 //
 export default function CustomVideoConference() {
     const room = useRoomContext();
@@ -519,20 +520,28 @@ export default function CustomVideoConference() {
                             .map((trackRef) => {
                                 const track = trackRef.publication?.track;
                                 return (
-                                    <video
-                                        key={trackRef.publication?.trackSid}
-                                        ref={(el) => {
-                                            if (el && track) {
-                                                track.detach();
-                                                track.attach(el);
-                                            }
-                                        }}
-                                        autoPlay
-                                        playsInline
-                                        className="absolute top-0 left-0 w-full h-full object-contain"
-                                    />
+                                    <div key={trackRef.publication?.trackSid} className="relative w-full h-full">
+                                        <ScreenShareVideo track={track} />
+
+                                        {/* Fullscreen button */}
+                                        <button
+                                            onClick={() => {
+                                                const videoElement = document.querySelector("video");
+                                                if (videoElement && videoElement.requestFullscreen) {
+                                                    videoElement.requestFullscreen();
+                                                }
+                                            }}
+                                            className="absolute top-2 right-2 bg-black/70 hover:bg-black/90 text-white p-2 rounded-md shadow"
+                                            title="Fullscreen"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 );
                             })}
+
                     </div>
                 ) : (
                     // Default local video
