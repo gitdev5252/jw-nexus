@@ -367,7 +367,7 @@ export default function CustomVideoConference() {
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 h-[25vh] overflow-y-auto">
                         {participants
                             .filter((p) => p.sid !== localParticipant?.sid)
-                            .slice(0, participants.length === 5 ? 4 : 3)
+                            .slice(0,  3)
                             .map((p) => {
                                 const pub = p.getTrackPublication(Track.Source.Camera);
                                 const track = pub?.track;
